@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos :: head(${titulo})}"></head>
+<body>
+<header th:replace="~{fragmentos :: encabezadoPublico}"></header>
+<main class="contenedor-estrecho documento" th:utext="${html}"></main>
+<footer th:replace="~{fragmentos :: pie}"></footer>
+</body>
+</html>

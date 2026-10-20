@@ -1,0 +1,900 @@
+{
+ "aviso": "Pocas oportunidades: el Estado suele contratar esta profesión de forma directa, sin concurso. Te mostramos las que sí aceptan ofertas.",
+ "profesiones": [
+  {
+   "id": "arquitecto",
+   "nombre": "Arquitecto",
+   "sinonimos": [
+    "arquitecto",
+    "arquitecta",
+    "arquitectura"
+   ],
+   "categorias": [
+    "7210",
+    "7211",
+    "7212",
+    "811015"
+   ],
+   "palabras_clave": [
+    "estudios y diseños",
+    "arquitectura",
+    "infraestructura física",
+    "adecuaciones",
+    "remodelación",
+    "mejoramiento",
+    "planos"
+   ],
+   "palabras_excluir": [
+    "licencias de software",
+    "antivirus",
+    "software",
+    "alcantarillado",
+    "acueducto",
+    "plantas eléctricas",
+    "red contra incendios",
+    "descargas atmosféricas",
+    "malla vial",
+    "pavimentación",
+    "placa huella",
+    "parque automotor",
+    "mantenimiento de vehículos",
+    "adquisición de vehículos",
+    "suministro de combustible"
+   ]
+  },
+  {
+   "id": "ingeniero_civil",
+   "nombre": "Ingeniero civil",
+   "sinonimos": [
+    "ingeniero civil",
+    "ingeniera civil",
+    "ingeniería civil",
+    "contratista de obra",
+    "contratista"
+   ],
+   "categorias": [
+    "7210",
+    "7211",
+    "7212",
+    "7214",
+    "811015"
+   ],
+   "palabras_clave": [
+    "obra civil",
+    "construcción",
+    "adecuación",
+    "mejoramiento",
+    "infraestructura vial",
+    "cubierta",
+    "mantenimiento vial",
+    "edificaciones"
+   ],
+   "palabras_excluir": [
+    "licencias de software",
+    "antivirus",
+    "software",
+    "parque automotor",
+    "mantenimiento de vehículos",
+    "adquisición de vehículos",
+    "suministro de combustible"
+   ]
+  },
+  {
+   "id": "ingeniero_sistemas",
+   "nombre": "Ingeniero de sistemas",
+   "sinonimos": [
+    "ingeniero de sistemas",
+    "ingeniera de sistemas",
+    "ingeniería de sistemas",
+    "desarrollador",
+    "programador"
+   ],
+   "categorias": [
+    "8111",
+    "8116"
+   ],
+   "palabras_clave": [
+    "desarrollo de software",
+    "sistemas de información",
+    "aplicativo",
+    "plataforma tecnológica",
+    "soporte técnico",
+    "infraestructura tecnológica",
+    "bases de datos",
+    "redes de datos"
+   ],
+   "palabras_excluir": [
+    "licencias",
+    "licenciamiento",
+    "compra de equipos",
+    "toner",
+    "impresoras",
+    "vehículos",
+    "laboratorio",
+    "aire acondicionado",
+    "plantas eléctricas",
+    "equipos biomédicos",
+    "mobiliario",
+    "interventoría",
+    "adquirir equipos",
+    "adquisición de equipos",
+    "renovación de garantías",
+    "extensión de garantía",
+    "semafórica",
+    "topográficos",
+    "logísticos"
+   ]
+  },
+  {
+   "id": "proveedor_tecnologia",
+   "nombre": "Proveedor de tecnología (equipos, licencias y redes)",
+   "sinonimos": [
+    "proveedor de tecnología",
+    "venta de computadores",
+    "venta de equipos de cómputo",
+    "distribuidor de tecnología",
+    "licencias de software",
+    "cableado estructurado",
+    "redes y cableado"
+   ],
+   "categorias": [
+    "4320",
+    "4321",
+    "4322",
+    "4323",
+    "811124",
+    "811125"
+   ],
+   "palabras_clave": [
+    "equipos de cómputo",
+    "computadores",
+    "equipos tecnológicos",
+    "licencias de software",
+    "licenciamiento",
+    "software",
+    "cableado estructurado",
+    "puntos de red",
+    "switches",
+    "firewall",
+    "impresoras",
+    "periféricos",
+    "tóner",
+    "escáner",
+    "ups",
+    "servidor físico",
+    "servidor dedicado",
+    "renovación de garantías",
+    "dispositivos de red",
+    "access point"
+   ],
+   "palabras_excluir": [
+    "servidores públicos",
+    "interventoría",
+    "obra",
+    "parque automotor",
+    "vehículos",
+    "equipos biomédicos",
+    "equipos de laboratorio"
+   ]
+  },
+  {
+   "id": "contador",
+   "nombre": "Contador",
+   "contratacion_directa": true,
+   "sinonimos": [
+    "contador",
+    "contadora",
+    "contador público",
+    "contaduría",
+    "contabilidad"
+   ],
+   "categorias": [
+    "8411"
+   ],
+   "palabras_clave": [
+    "revisoría fiscal",
+    "estados financieros",
+    "servicios contables",
+    "asesoría contable",
+    "saneamiento contable",
+    "contabilidad",
+    "control interno",
+    "asesoría tributaria",
+    "dictamen pericial económico"
+   ],
+   "palabras_excluir": [
+    "interventoría",
+    "presupuestos participativos",
+    "obra",
+    "aseo",
+    "mantenimiento preventivo",
+    "suministro"
+   ]
+  },
+  {
+   "id": "abogado",
+   "nombre": "Abogado",
+   "contratacion_directa": true,
+   "sinonimos": [
+    "abogado",
+    "abogada",
+    "derecho",
+    "jurídico"
+   ],
+   "categorias": [
+    "8012"
+   ],
+   "palabras_clave": [
+    "asesoría jurídica",
+    "defensa judicial",
+    "representación judicial",
+    "cobro coactivo",
+    "procesos judiciales",
+    "contratación estatal",
+    "conciliación",
+    "análisis jurídico",
+    "estudio de títulos",
+    "apoyo jurídico",
+    "acompañamiento jurídico",
+    "gestión jurídica"
+   ],
+   "palabras_excluir": [
+    "interventoría",
+    "persona jurídica",
+    "apoyo logístico",
+    "suministro",
+    "vehículos"
+   ]
+  },
+  {
+   "id": "psicologo",
+   "nombre": "Psicólogo",
+   "contratacion_directa": true,
+   "sinonimos": [
+    "psicólogo",
+    "psicologa",
+    "psicóloga",
+    "psicologia",
+    "psicología"
+   ],
+   "categorias": [
+    "8512",
+    "8510"
+   ],
+   "palabras_clave": [
+    "psicología",
+    "salud mental",
+    "terapia ocupacional",
+    "rehabilitación",
+    "bienestar laboral",
+    "apoyo psicosocial"
+   ],
+   "palabras_excluir": [
+    "vías",
+    "malla vial",
+    "pavimento",
+    "interventoría",
+    "equipos"
+   ]
+  },
+  {
+   "id": "medico",
+   "nombre": "Médico",
+   "sinonimos": [
+    "médico",
+    "medico",
+    "médica",
+    "medicina"
+   ],
+   "categorias": [
+    "8512",
+    "8510"
+   ],
+   "palabras_clave": [
+    "salud",
+    "atención médica",
+    "equipos médicos",
+    "medicamentos",
+    "insumos médicos",
+    "exámenes médicos",
+    "medicina",
+    "servicios de salud",
+    "prestación de servicios de salud"
+   ],
+   "palabras_excluir": [
+    "mantenimiento preventivo",
+    "equipos biomédicos",
+    "dotación",
+    "interventoría",
+    "obra"
+   ]
+  },
+  {
+   "id": "docente",
+   "nombre": "Docente",
+   "contratacion_directa": true,
+   "sinonimos": [
+    "docente",
+    "profesor",
+    "profesora",
+    "maestro",
+    "maestra"
+   ],
+   "categorias": [
+    "8610",
+    "8611",
+    "8612",
+    "8613"
+   ],
+   "palabras_clave": [
+    "docentes",
+    "educación",
+    "instituciones educativas",
+    "bienestar laboral",
+    "personal docente",
+    "dotación docente"
+   ],
+   "palabras_excluir": [
+    "alimentación escolar",
+    "transporte escolar",
+    "obra",
+    "construcción",
+    "mobiliario",
+    "interventoría"
+   ]
+  },
+  {
+   "id": "disenador_grafico",
+   "nombre": "Diseñador gráfico",
+   "contratacion_directa": true,
+   "sinonimos": [
+    "diseñador gráfico",
+    "disenador grafico",
+    "diseñadora gráfica",
+    "diseño gráfico"
+   ],
+   "categorias": [
+    "8214",
+    "8210"
+   ],
+   "palabras_clave": [
+    "diseño gráfico",
+    "material publicitario",
+    "imagen corporativa",
+    "piezas gráficas",
+    "material pedagógico",
+    "publicidad",
+    "diagramación",
+    "impresos"
+   ],
+   "palabras_excluir": [
+    "mobiliario",
+    "interventoría"
+   ]
+  },
+  {
+   "id": "ingeniero_ambiental",
+   "nombre": "Ingeniero ambiental",
+   "sinonimos": [
+    "ingeniero ambiental",
+    "ingeniera ambiental",
+    "ingeniería ambiental",
+    "medio ambiente"
+   ],
+   "categorias": [
+    "7710",
+    "7711",
+    "7712"
+   ],
+   "palabras_clave": [
+    "gestión ambiental",
+    "educación ambiental",
+    "impacto ambiental",
+    "licencias ambientales",
+    "residuos sólidos",
+    "medio ambiente",
+    "sostenibilidad",
+    "recursos naturales",
+    "manejo ambiental"
+   ],
+   "palabras_excluir": [
+    "combustible",
+    "parque automotor",
+    "dotación"
+   ]
+  },
+  {
+   "id": "topografo",
+   "nombre": "Topógrafo",
+   "sinonimos": [
+    "topógrafo",
+    "topografo",
+    "topógrafa",
+    "topografía"
+   ],
+   "categorias": [
+    "8115",
+    "811015"
+   ],
+   "palabras_clave": [
+    "topografía",
+    "levantamiento topográfico",
+    "estudios y diseños",
+    "infraestructura vial",
+    "control de calidad",
+    "mezcla asfáltica"
+   ],
+   "palabras_excluir": [
+    "medicamentos",
+    "alimentos",
+    "software"
+   ]
+  },
+  {
+   "id": "electricista",
+   "nombre": "Electricista",
+   "sinonimos": [
+    "electricista",
+    "eléctrico",
+    "electrico"
+   ],
+   "categorias": [
+    "721515",
+    "811017",
+    "3912"
+   ],
+   "palabras_clave": [
+    "redes eléctricas",
+    "instalaciones eléctricas",
+    "plantas eléctricas",
+    "energía eléctrica",
+    "puesta a tierra",
+    "baja tensión",
+    "subestaciones"
+   ],
+   "palabras_excluir": [
+    "combustible",
+    "vehículos",
+    "parque automotor"
+   ]
+  },
+  {
+   "id": "transportador",
+   "nombre": "Transportador",
+   "sinonimos": [
+    "transportador",
+    "transportadora",
+    "conductor",
+    "transporte"
+   ],
+   "categorias": [
+    "7811",
+    "7810",
+    "7814"
+   ],
+   "palabras_clave": [
+    "transporte escolar",
+    "transporte terrestre",
+    "transporte especial",
+    "servicio de transporte",
+    "transporte de personal",
+    "transporte rural",
+    "transporte de pasajeros",
+    "transporte de carga",
+    "alquiler de vehículos",
+    "recolección de residuos"
+   ],
+   "palabras_excluir": [
+    "residuos peligrosos",
+    "accidentes de tránsito",
+    "especies venales",
+    "placa",
+    "combustible",
+    "extintores",
+    "soat"
+   ]
+  },
+  {
+   "id": "enfermero",
+   "nombre": "Enfermero/a",
+   "contratacion_directa": true,
+   "sinonimos": [
+    "enfermero",
+    "enfermera",
+    "enfermería"
+   ],
+   "categorias": [
+    "8512",
+    "8510"
+   ],
+   "palabras_clave": [
+    "enfermería",
+    "atención domiciliaria",
+    "cuidados de enfermería",
+    "aplicación de medicamentos",
+    "curaciones",
+    "atención en salud",
+    "extensión hospitalaria",
+    "aseguramiento en salud"
+   ],
+   "palabras_excluir": [
+    "mantenimiento preventivo",
+    "equipos biomédicos",
+    "dotación",
+    "obra",
+    "interventoría"
+   ]
+  },
+  {
+   "id": "nutricionista",
+   "nombre": "Nutricionista",
+   "contratacion_directa": true,
+   "sinonimos": [
+    "nutricionista",
+    "nutrición",
+    "nutricion"
+   ],
+   "categorias": [
+    "8512",
+    "8515"
+   ],
+   "palabras_clave": [
+    "nutrición",
+    "evaluación nutricional",
+    "condición física",
+    "alimentación saludable",
+    "seguridad alimentaria",
+    "cardiovascular",
+    "cultura del cuidado"
+   ],
+   "palabras_excluir": [
+    "semillas",
+    "insumos agropecuarios",
+    "obra"
+   ]
+  },
+  {
+   "id": "vigilancia_seguridad",
+   "nombre": "Vigilancia y seguridad",
+   "sinonimos": [
+    "vigilante",
+    "seguridad privada",
+    "vigilancia",
+    "guarda de seguridad"
+   ],
+   "categorias": [
+    "9212",
+    "4617"
+   ],
+   "palabras_clave": [
+    "vigilancia",
+    "seguridad privada",
+    "vigilancia y seguridad",
+    "bienes muebles e inmuebles",
+    "monitoreo",
+    "control de acceso",
+    "protección de bienes",
+    "fortalecimiento de la seguridad"
+   ],
+   "palabras_excluir": [
+    "seguros",
+    "pólizas",
+    "salud pública"
+   ]
+  },
+  {
+   "id": "odontologo",
+   "nombre": "Odontólogo",
+   "contratacion_directa": true,
+   "sinonimos": [
+    "odontólogo",
+    "odontologo",
+    "odontóloga",
+    "odontología"
+   ],
+   "categorias": [
+    "8512",
+    "4215"
+   ],
+   "palabras_clave": [
+    "odontología",
+    "salud oral",
+    "equipos odontológicos",
+    "atención especializada",
+    "odontología especializada",
+    "subsistema salud"
+   ],
+   "palabras_excluir": [
+    "mantenimiento preventivo",
+    "dotación"
+   ]
+  },
+  {
+   "id": "fisioterapeuta",
+   "nombre": "Fisioterapeuta",
+   "contratacion_directa": true,
+   "sinonimos": [
+    "fisioterapeuta",
+    "fisioterapia"
+   ],
+   "categorias": [
+    "8512",
+    "8510"
+   ],
+   "palabras_clave": [
+    "fisioterapia",
+    "terapia física",
+    "rehabilitación",
+    "terapia ocupacional",
+    "fonoaudiología",
+    "neurorehabilitación",
+    "atención en salud"
+   ],
+   "palabras_excluir": [
+    "vías",
+    "malla vial",
+    "pavimento",
+    "interventoría"
+   ]
+  },
+  {
+   "id": "comunicador_social",
+   "nombre": "Comunicador social",
+   "contratacion_directa": true,
+   "sinonimos": [
+    "comunicador social",
+    "comunicadora social",
+    "periodista",
+    "comunicaciones"
+   ],
+   "categorias": [
+    "8210",
+    "8211"
+   ],
+   "palabras_clave": [
+    "comunicaciones institucionales",
+    "fortalecimiento comunitario",
+    "participación ciudadana",
+    "divulgación",
+    "medios de comunicación",
+    "prensa"
+   ],
+   "palabras_excluir": [
+    "dotación"
+   ]
+  },
+  {
+   "id": "biologo",
+   "nombre": "Biólogo",
+   "sinonimos": [
+    "biólogo",
+    "biologo",
+    "bióloga",
+    "biología"
+   ],
+   "categorias": [
+    "4110",
+    "4111",
+    "4112"
+   ],
+   "palabras_clave": [
+    "laboratorio",
+    "microbiología",
+    "biología",
+    "pruebas de laboratorio",
+    "muestras biológicas",
+    "análisis de laboratorio",
+    "equipos de laboratorio",
+    "ciencias forenses"
+   ],
+   "palabras_excluir": [
+    "mantenimiento preventivo",
+    "mantenimiento correctivo",
+    "obra"
+   ]
+  },
+  {
+   "id": "publicista",
+   "nombre": "Publicista / Mercadeo",
+   "sinonimos": [
+    "publicista",
+    "mercadeo",
+    "marketing",
+    "publicidad"
+   ],
+   "categorias": [
+    "8210",
+    "8214",
+    "8212"
+   ],
+   "palabras_clave": [
+    "publicidad",
+    "material publicitario",
+    "difusión",
+    "campañas publicitarias",
+    "impresión de publicidad",
+    "elementos promocionales",
+    "divulgación institucional"
+   ],
+   "palabras_excluir": [
+    "dotación"
+   ]
+  },
+  {
+   "id": "redes_equipos",
+   "nombre": "Instalación de redes y equipos",
+   "sinonimos": [
+    "instalación de redes",
+    "técnico de computadores",
+    "soporte técnico",
+    "redes y computadores",
+    "instalador de redes"
+   ],
+   "categorias": [
+    "811123",
+    "811118",
+    "8116",
+    "4322"
+   ],
+   "palabras_clave": [
+    "mesa de servicio",
+    "soporte técnico",
+    "mantenimiento de equipos de cómputo",
+    "instalación de redes",
+    "mantenimiento preventivo y correctivo"
+   ],
+   "palabras_excluir": [
+    "parque automotor",
+    "vehículos",
+    "plantas eléctricas",
+    "aire acondicionado",
+    "ascensores",
+    "equipos biomédicos",
+    "motocicletas",
+    "llantas"
+   ]
+  },
+  {
+   "id": "mantenimiento_locativo",
+   "nombre": "Mantenimiento locativo",
+   "sinonimos": [
+    "mantenimiento locativo",
+    "reparaciones locativas",
+    "mantenimiento general",
+    "obras locativas"
+   ],
+   "categorias": [
+    "7210",
+    "7215"
+   ],
+   "palabras_clave": [
+    "mantenimiento locativo",
+    "reparaciones locativas",
+    "obras locativas",
+    "mejoramiento",
+    "adecuación",
+    "infraestructura física"
+   ],
+   "palabras_excluir": [
+    "licencias de software",
+    "antivirus",
+    "software",
+    "parque automotor",
+    "mantenimiento de vehículos",
+    "adquisición de vehículos",
+    "suministro de combustible",
+    "interventoría"
+   ]
+  },
+  {
+   "id": "aseo_cafeteria",
+   "nombre": "Aseo y cafetería",
+   "sinonimos": [
+    "aseo",
+    "cafetería",
+    "empresa de aseo",
+    "servicios generales",
+    "aseo y cafetería"
+   ],
+   "categorias": [
+    "7611",
+    "7610",
+    "721021"
+   ],
+   "palabras_clave": [
+    "aseo y cafetería",
+    "aseo integral",
+    "servicios generales",
+    "desinfección",
+    "conservación de instalaciones"
+   ],
+   "palabras_excluir": [
+    "parque automotor",
+    "dotación",
+    "calzado",
+    "papelería",
+    "hidrosanitarias",
+    "compras de bienes",
+    "equipos hidráulicos"
+   ]
+  },
+  {
+   "id": "suministro_alimentos",
+   "nombre": "Suministro de alimentos",
+   "sinonimos": [
+    "suministro de alimentos",
+    "alimentación escolar",
+    "catering",
+    "proveedor de alimentos",
+    "refrigerios"
+   ],
+   "categorias": [
+    "9010",
+    "8515",
+    "5019",
+    "9313"
+   ],
+   "palabras_clave": [
+    "alimentación escolar",
+    "refrigerios",
+    "suministro de alimentos",
+    "programa de alimentación"
+   ],
+   "palabras_excluir": [
+    "transporte escolar",
+    "obra",
+    "dotación"
+   ]
+  },
+  {
+   "id": "eventos",
+   "nombre": "Logística de eventos",
+   "sinonimos": [
+    "logística de eventos",
+    "organización de eventos",
+    "eventos",
+    "montaje de eventos"
+   ],
+   "categorias": [
+    "801419",
+    "9010"
+   ],
+   "palabras_clave": [
+    "eventos institucionales",
+    "apoyo logístico",
+    "organización de eventos",
+    "montaje de eventos"
+   ],
+   "palabras_excluir": [
+    "combustible",
+    "dotación"
+   ]
+  },
+  {
+   "id": "jardineria",
+   "nombre": "Jardinería y zonas verdes",
+   "sinonimos": [
+    "jardinería",
+    "jardinero",
+    "zonas verdes",
+    "paisajismo",
+    "poda"
+   ],
+   "categorias": [
+    "7011",
+    "7015"
+   ],
+   "palabras_clave": [
+    "zonas verdes",
+    "poda",
+    "tala",
+    "mantenimiento de zonas verdes",
+    "corte de maleza"
+   ],
+   "palabras_excluir": [
+    "vehículos",
+    "software"
+   ]
+  }
+ ]
+}

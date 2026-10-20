@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Error | SECOP RADAR</title>
+    <link rel="stylesheet" href="/css/app.css">
+</head>
+<body class="fondo-suave">
+<main class="centro">
+    <div class="caja-auth">
+        <h1 th:text="${status == 404} ? 'Página no encontrada' : 'Algo salió mal'">Algo salió mal</h1>
+        <p class="apagado" th:text="${status == 404} ? 'La página que buscas no existe.' : 'Ocurrió un error inesperado. Revisa la consola de la aplicación para más detalles.'"></p>
+        <p class="centro-texto margen-arriba"><a href="/">Ir al inicio</a></p>
+    </div>
+</main>
+</body>
+</html>

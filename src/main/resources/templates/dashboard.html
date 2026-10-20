@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos :: head('Oportunidades')}"></head>
+<body class="app">
+<header th:replace="~{fragmentos :: encabezadoApp}"></header>
+
+<main class="contenedor-app">
+    <h1 th:text="'Hola' + (${usuario.nombre()} != null ? ', ' + ${usuario.nombre()} : '')">Hola</h1>
+    <p class="apagado margen-abajo" th:text="${panel.total()} == 0 ? 'Aquí verás las oportunidades que coincidan con tus perfiles.' : ${panel.total()} + ' oportunidad' + (${panel.total()} == 1 ? '' : 'es') + ' vigente' + (${panel.total()} == 1 ? '' : 's') + ' en tus perfiles.'"></p>
+
+    <div th:if="${plan.origen() == 'prueba'}" class="caja caja-acento margen-abajo">
+        <span th:text="'Te quedan ' + ${plan.diasRestantes()} + ' día' + (${plan.diasRestantes()} == 1 ? '' : 's') + ' de prueba del plan ' + ${plan.nombre()} + '.'"></span>
+        <a href="/planes">Ver planes</a>
+    </div>
+
+    <div th:if="${panel.ocultasPorPlan() > 0}" class="caja caja-acento margen-abajo">
+        <span th:text="'Con el plan ' + ${plan.nombre()} + ' ves tus ' + ${plan.maxCoincidencias()} + ' mejores oportunidades. Tienes ' + ${panel.ocultasPorPlan()} + ' más que coinciden con tus perfiles.'"></span>
+        <a href="/planes">Ver planes</a>
+    </div>
+
+    <div th:if="${panel.total() > 0}" class="margen-abajo">
+        <p class="sobretitulo">Total general — sin aplicar filtros</p>
+        <div class="resumen">
+            <div class="cifra"><b th:text="${panel.total()}">0</b><span>oportunidades vigentes</span></div>
+            <div class="cifra"><b class="urgente-texto" th:text="${panel.cierranSemana()}">0</b><span>cierran esta semana</span></div>
+            <div class="cifra cifra-ancha"><b th:text="${panel.valorTotalTexto()}">$0</b><span>valor total</span></div>
+        </div>
+    </div>
+
+    <div th:if="${!tienePerfiles}" class="caja margen-abajo">
+        <p>Todavía no tienes perfiles de búsqueda.</p>
+        <a href="/perfiles" class="boton boton-azul margen-arriba">Crear mi primer perfil</a>
+    </div>
+
+    <!-- Filtros -->
+    <div th:if="${tienePerfiles and panel.total() > 0}" class="filtros">
+        <form method="get" action="/dashboard" id="form-filtros">
+            <div class="fila-orden">
+                <span class="etiqueta-chica" th:text="'Filtros' + (${f.contar()} > 0 ? ' activos: ' + ${f.contar()} : '')">Filtros</span>
+                <select name="orden" aria-label="Ordenar por" class="campo campo-auto" data-autoenvio>
+                    <option th:each="o : ${ordenes}" th:value="${o[0]}" th:text="${o[1]}" th:selected="${o[0] == f.orden()}"></option>
+                </select>
+            </div>
+            <div class="caja panel-filtros">
+                <div class="rejilla-2">
+                    <div>
+                        <label class="etiqueta-chica" for="filtro-q">Buscar en tus oportunidades</label>
+                        <input id="filtro-q" name="q" type="search" class="campo" th:value="${f.q()}" placeholder='Ej: "soporte técnico" -licencias'>
+                    </div>
+                    <div>
+                        <label class="etiqueta-chica" for="filtro-entidad">Entidad</label>
+                        <input id="filtro-entidad" name="entidad" type="search" list="lista-entidades" class="campo" th:value="${f.entidad()}" placeholder="Ej: ICBF, Gobernación de Antioquia">
+                        <datalist id="lista-entidades"><option th:each="e : ${panel.entidades()}" th:value="${e}"></option></datalist>
+                    </div>
+                </div>
+                <div class="rejilla-3">
+                    <div>
+                        <label class="etiqueta-chica" for="filtro-region">Región</label>
+                        <select id="filtro-region" name="region" class="campo" data-autoenvio>
+                            <option value="">Todas</option>
+                            <option th:each="r : ${regiones}" th:value="${r.id()}" th:text="${r.nombre()}" th:selected="${r.id() == f.region()}"></option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="etiqueta-chica" for="filtro-departamento">Departamento</label>
+                        <select id="filtro-departamento" name="departamento" class="campo" data-autoenvio>
+                            <option value="">Todos</option>
+                            <option th:each="d : ${departamentos}" th:value="${d.valor()}" th:text="${d.label()}" th:selected="${d.valor() == f.departamento()}"></option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="etiqueta-chica" for="filtro-modalidad">Modalidad</label>
+                        <select id="filtro-modalidad" name="modalidad" class="campo" data-autoenvio>
+                            <option value="">Todas</option>
+                            <option th:each="m : ${modalidades}" th:value="${m.valor()}" th:text="${m.label()}" th:selected="${m.valor() == f.modalidad()}"></option>
+                        </select>
+                    </div>
+                </div>
+                <!-- Se conservan los filtros de chips al enviar el formulario -->
+                <input type="hidden" name="cierra" th:value="${f.cierra()}">
+                <input type="hidden" name="valor" th:value="${#strings.listJoin(f.valor(), ',')}">
+                <button type="submit" class="boton boton-azul boton-chico">Aplicar</button>
+
+                <fieldset>
+                    <legend class="etiqueta-chica">Cierra</legend>
+                    <div class="chips">
+                        <a th:each="c : ${chipsCierre}" th:href="${c.href()}" class="chip" th:classappend="${c.activo()} ? 'activo'" th:text="${c.label()}"></a>
+                    </div>
+                </fieldset>
+                <fieldset>
+                    <legend class="etiqueta-chica">Valor del proceso</legend>
+                    <div class="chips">
+                        <a th:each="c : ${chipsValor}" th:href="${c.href()}" class="chip" th:classappend="${c.activo()} ? 'activo'" th:text="${c.label()}"></a>
+                    </div>
+                </fieldset>
+                <a th:if="${f.contar() > 0}" th:href="${hrefSinFiltros}" class="enlace-fuerte" th:text="'Quitar todos los filtros (' + ${f.contar()} + ')'"></a>
+            </div>
+        </form>
+    </div>
+
+    <p th:if="${panel.total() > 0}" class="resultado-frase" aria-live="polite" th:text="${fraseResultados}"></p>
+
+    <div th:if="${tienePerfiles and panel.total() > 0 and panel.oportunidades().isEmpty() and hayFiltros}" class="caja">
+        <p>No hay coincidencias vigentes con estos filtros.</p>
+        <a th:href="${hrefSinFiltros}">Quitar todos los filtros</a>
+    </div>
+
+    <div th:if="${tienePerfiles and panel.oportunidades().isEmpty() and !hayFiltros}" class="caja">
+        <p>Aún no hay coincidencias vigentes.</p>
+        <p class="texto-chico apagado">Prueba ampliando las palabras clave o quitando filtros de departamento. Si la base aún se está llenando, vuelve en unos minutos.</p>
+    </div>
+
+    <div class="lista">
+        <th:block th:each="o : ${panel.oportunidades()}"><article th:replace="~{fragmentos :: tarjeta(${o}, true)}"></article></th:block>
+    </div>
+
+    <div th:if="${panel.hayMas()}" class="centro-texto margen-arriba">
+        <a th:href="${hrefMas}" class="boton boton-borde">Cargar más</a>
+    </div>
+</main>
+
+<footer th:replace="~{fragmentos :: pie}"></footer>
+<script src="/js/dashboard.js"></script>
+</body>
+</html>

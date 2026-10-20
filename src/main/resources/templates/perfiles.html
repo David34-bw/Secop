@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos :: head('Mis búsquedas')}"></head>
+<body class="app">
+<header th:replace="~{fragmentos :: encabezadoApp}"></header>
+
+<main class="contenedor-app">
+    <h1>Mis búsquedas</h1>
+    <p class="apagado margen-abajo">Cada perfil describe un tipo de contrato que te interesa. Cruzamos cada perfil con los procesos vigentes de SECOP II.</p>
+
+    <div th:if="${param.bienvenida}" class="aviso aviso-exito">¡Bienvenido! Crea tu primer perfil de búsqueda para ver tus oportunidades.</div>
+    <div id="mensaje-creado" class="aviso aviso-exito oculto"></div>
+
+    <!-- Perfiles existentes -->
+    <section th:if="${!perfiles.isEmpty()}" class="margen-abajo">
+        <h2 class="subtitulo">Tus perfiles</h2>
+        <div class="lista">
+            <div th:each="v : ${perfiles}" class="caja perfil" th:classappend="${!v.perfil().activo()} ? 'inactivo'">
+                <div class="perfil-cabeza">
+                    <div>
+                        <h3 th:text="${v.perfil().nombre()}">Perfil</h3>
+                        <p class="texto-chico apagado" th:if="${v.profesion() != null}" th:text="'Profesión: ' + ${v.profesion()}"></p>
+                        <p class="texto-chico etiqueta-peligro" th:if="${v.perfil().desactivadoPorPlan()}">Apagado por el límite de tu plan</p>
+                    </div>
+                    <form method="post" th:action="@{/perfiles/{id}/eliminar(id=${v.perfil().id()})}"
+                          onsubmit="return confirm('¿Eliminar este perfil y sus coincidencias?')">
+                        <button type="submit" class="boton boton-chico boton-peligro">Eliminar</button>
+                    </form>
+                </div>
+                <dl class="perfil-datos">
+                    <th:block th:if="${!v.categorias().isEmpty()}"><dt>Áreas</dt><dd th:text="${#strings.listJoin(v.categorias(), ' · ')}"></dd></th:block>
+                    <th:block th:if="${!v.perfil().palabrasClave().isEmpty()}"><dt>Palabras clave</dt><dd th:text="${#strings.listJoin(v.perfil().palabrasClave(), ', ')}"></dd></th:block>
+                    <th:block th:if="${!v.perfil().palabrasExcluir().isEmpty()}"><dt>Excluir</dt><dd th:text="${#strings.listJoin(v.perfil().palabrasExcluir(), ', ')}"></dd></th:block>
+                    <dt>Departamentos</dt><dd th:text="${v.perfil().departamentos().isEmpty()} ? 'Todo el país' : ${#strings.listJoin(v.perfil().departamentos(), ', ')}"></dd>
+                    <th:block th:if="${!v.perfil().ciudades().isEmpty()}"><dt>Ciudades</dt><dd th:text="${#strings.listJoin(v.perfil().ciudades(), ', ')}"></dd></th:block>
+                    <th:block th:if="${!v.perfil().modalidades().isEmpty()}"><dt>Modalidades</dt><dd th:text="${#strings.listJoin(v.perfil().modalidades(), ', ')}"></dd></th:block>
+                    <th:block th:if="${!v.perfil().tiposContrato().isEmpty()}"><dt>Tipos de contrato</dt><dd th:text="${#strings.listJoin(v.perfil().tiposContrato(), ', ')}"></dd></th:block>
+                    <th:block th:if="${!v.perfil().tiposEntidad().isEmpty()}"><dt>Entidades</dt><dd th:text="${#strings.listJoin(v.perfil().tiposEntidad(), ', ')}"></dd></th:block>
+                    <th:block th:if="${!v.rangos().isEmpty()}"><dt>Valor</dt><dd th:text="${#strings.listJoin(v.rangos(), ', ')}"></dd></th:block>
+                    <th:block th:if="${v.perfil().diasMinRestantes() != null}"><dt>Días mínimos</dt><dd th:text="${v.perfil().diasMinRestantes()}"></dd></th:block>
+                </dl>
+            </div>
+        </div>
+    </section>
+
+    <div th:if="${!puedeCrear}" class="aviso aviso-alerta">
+        <span th:text="${mensajeLimite}"></span> <a href="/planes">Ver planes</a>
+    </div>
+
+    <!-- Nuevo perfil -->
+    <section th:if="${puedeCrear}" class="caja" id="nuevo-perfil">
+        <h2 class="subtitulo">Nuevo perfil</h2>
+
+        <h3 class="paso-titulo"><span>1</span> Profesión</h3>
+        <div data-grupo="profesion">
+            <label class="etiqueta" for="profesion">¿A qué te dedicas? *</label>
+            <select id="profesion" class="campo" required>
+                <option value="">Elige tu profesión...</option>
+            </select>
+            <input id="profesion-otra" class="campo margen-arriba oculto" maxlength="100"
+                   placeholder="Escribe tu profesión u oficio, ej: Ingeniero mecánico">
+            <p class="error-campo oculto" data-error="profesion"></p>
+        </div>
+        <p id="aviso-directa" class="aviso aviso-alerta oculto"></p>
+
+        <div data-grupo="nombre">
+            <label class="etiqueta" for="nombre">Nombre del perfil *</label>
+            <input id="nombre" class="campo" maxlength="200" placeholder="Ej: Software para alcaldías">
+            <p class="error-campo oculto" data-error="nombre"></p>
+        </div>
+
+        <label class="etiqueta">Áreas (categorías UNSPSC)</label>
+        <div id="categorias-elegidas" class="chips"></div>
+        <details class="explorar">
+            <summary>Agregar áreas</summary>
+            <input id="buscar-area" class="campo margen-arriba" placeholder="Filtrar áreas: software, aseo, obra...">
+            <div id="arbol-areas" class="arbol"></div>
+        </details>
+
+        <div class="rejilla-2 margen-arriba">
+            <div>
+                <label class="etiqueta" for="input-palabras_clave">Palabras clave</label>
+                <input id="input-palabras_clave" class="campo" data-chips="palabras_clave" placeholder="Escribe y presiona Enter">
+                <p class="texto-chico apagado">Frases que deben aparecer en el nombre o la descripción del proceso.</p>
+                <div class="chips" id="chips-palabras_clave"></div>
+            </div>
+            <div>
+                <label class="etiqueta" for="input-palabras_excluir">Excluir</label>
+                <input id="input-palabras_excluir" class="campo" data-chips="palabras_excluir" placeholder="Escribe y presiona Enter">
+                <p class="texto-chico apagado">Si aparecen, el proceso se descarta. "compras de bienes" quita suministros y compras.</p>
+                <div class="chips" id="chips-palabras_excluir"></div>
+            </div>
+        </div>
+
+        <h3 class="paso-titulo"><span>2</span> Dónde</h3>
+        <div th:replace="~{fragmentos :: grupoOpciones(${grupoDepartamentos})}"></div>
+        <label class="etiqueta margen-arriba" for="input-ciudades">Ciudades (opcional)</label>
+        <input id="input-ciudades" class="campo" data-chips="ciudades" placeholder="Como las nombra SECOP, ej: Medellín. Enter para agregar">
+        <div class="chips" id="chips-ciudades"></div>
+
+        <h3 class="paso-titulo"><span>3</span> Ajustes</h3>
+        <th:block th:each="g : ${gruposAjustes}">
+            <div th:replace="~{fragmentos :: grupoOpciones(${g})}"></div>
+        </th:block>
+        <label class="etiqueta margen-arriba" for="dias">Días mínimos antes del cierre (opcional)</label>
+        <input id="dias" type="number" min="0" max="365" class="campo campo-auto" placeholder="Ej: 3">
+
+        <div class="barra-guardar">
+            <p id="vista-previa" class="texto-chico apagado" aria-live="polite">Ajusta el perfil para ver cuántos procesos vigentes coinciden.</p>
+            <p id="error-perfil" class="aviso aviso-error oculto"></p>
+            <button id="guardar" type="button" class="boton boton-ambar">Guardar perfil</button>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{fragmentos :: pie}"></footer>
+
+<script src="/js/perfil.js"></script>
+</body>
+</html>

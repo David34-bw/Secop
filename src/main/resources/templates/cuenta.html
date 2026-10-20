@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos :: head('Mi cuenta')}"></head>
+<body class="app">
+<header th:replace="~{fragmentos :: encabezadoApp}"></header>
+
+<main class="contenedor-app">
+    <h1>Mi cuenta</h1>
+    <p th:if="${mensaje}" class="aviso aviso-exito" th:text="${mensaje}"></p>
+    <p th:if="${error}" class="aviso aviso-error" th:text="${error}"></p>
+
+    <section class="caja margen-abajo">
+        <h2 class="subtitulo">Plan</h2>
+        <p><b th:text="${plan.nombre()}">Plan</b>
+            <span class="apagado" th:switch="${plan.origen()}">
+                <span th:case="'prueba'" th:text="'— prueba gratis hasta el ' + ${planHasta} + ' (' + ${plan.diasRestantes()} + ' días)'"></span>
+                <span th:case="'prepago'" th:text="'— pagado hasta el ' + ${planHasta}"></span>
+                <span th:case="'gracia'" th:text="'— cobro pendiente, se conserva hasta el ' + ${planHasta}"></span>
+                <span th:case="'admin'">— cuenta de administrador, sin límites</span>
+                <span th:case="*"></span>
+            </span>
+        </p>
+        <ul class="plan-beneficios">
+            <li th:each="b : ${plan.beneficios()}" th:text="${b}" th:classappend="${b.startsWith('Sin')} ? 'sin'"></li>
+        </ul>
+        <a href="/planes">Ver planes</a>
+    </section>
+
+    <section class="caja margen-abajo">
+        <h2 class="subtitulo">Alertas por correo</h2>
+        <form method="post" action="/cuenta/alertas" class="en-linea">
+            <input type="hidden" name="activas" th:value="${!usuario.alertasActivas()}">
+            <p th:text="${usuario.alertasActivas()} ? 'Recibes un correo con las oportunidades nuevas (si tu plan incluye alertas).' : 'No recibes alertas por correo.'"></p>
+            <button type="submit" class="boton boton-borde boton-chico margen-arriba"
+                    th:text="${usuario.alertasActivas()} ? 'Desactivar alertas' : 'Activar alertas'">Cambiar</button>
+        </form>
+        <p th:if="${!correoConfigurado}" class="texto-chico apagado margen-arriba">
+            En esta instalación local el envío de correos está apagado (falta configurar SMTP en application.properties).
+        </p>
+    </section>
+
+    <section class="caja margen-abajo">
+        <h2 class="subtitulo">Datos</h2>
+        <p class="texto-chico apagado" th:text="'Correo: ' + ${usuario.email()} + ' · Cuenta creada el ' + ${creada}"></p>
+        <form method="post" action="/cuenta/nombre" class="fila-input margen-arriba">
+            <input name="nombre" class="campo" maxlength="200" th:value="${usuario.nombre()}" placeholder="Tu nombre">
+            <button type="submit" class="boton boton-borde">Guardar nombre</button>
+        </form>
+    </section>
+
+    <section class="caja">
+        <h2 class="subtitulo">Cambiar contraseña</h2>
+        <form method="post" action="/cuenta/password" class="formulario">
+            <input name="actual" type="password" class="campo" placeholder="Contraseña actual" required autocomplete="current-password">
+            <input name="nueva" type="password" class="campo" placeholder="Contraseña nueva (mínimo 8)" minlength="8" required autocomplete="new-password">
+            <button type="submit" class="boton boton-borde">Cambiar contraseña</button>
+        </form>
+    </section>
+</main>
+
+<footer th:replace="~{fragmentos :: pie}"></footer>
+</body>
+</html>

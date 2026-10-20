@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos :: head('Licitaciones en Colombia')}"></head>
+<body>
+<header th:replace="~{fragmentos :: encabezadoPublico}"></header>
+
+<main>
+    <!-- Hero -->
+    <section class="hero">
+        <div class="contenedor hero-contenido">
+            <h1>Licitaciones y contratos del Estado en <span class="azul-claro">Colombia</span></h1>
+            <p class="hero-texto">Te mostramos solo los procesos de SECOP II que son para ti, y te avisamos antes de que cierren.</p>
+            <a href="/registro" class="boton-principal">
+                <span th:text="'Regístrate y prueba ' + ${diasPrueba} + ' días gratis'">Regístrate</span>
+                <span class="flecha">→</span>
+            </a>
+            <p class="hero-nota">Sin tarjeta. Cancelas cuando quieras.</p>
+        </div>
+        <p class="credito-foto">Foto: Fernanda Fierro / Unsplash</p>
+    </section>
+
+    <!-- Datos en vivo -->
+    <div class="contenedor-estrecho barra-vivo-envoltura">
+        <div class="barra-vivo">
+            <p class="vivo-titulo"><span class="punto-vivo"></span> Hoy en Colombia</p>
+            <dl class="vivo-datos">
+                <div><dd th:text="${datos.numero(datos.abiertos())}">0</dd><dt>procesos abiertos</dt></div>
+                <div><dd th:text="${datos.numero(datos.nuevosHoy())}">0</dd><dt>nuevos hoy</dt></div>
+                <div><dd th:text="${datos.numero(datos.cierranSemana())}">0</dd><dt>cierran esta semana</dt></div>
+            </dl>
+        </div>
+        <p th:if="${datos.abiertos() == 0}" class="aviso aviso-info margen-arriba">
+            Todavía no hay procesos en la base local. Al arrancar por primera vez la app descarga los últimos días de SECOP II
+            en segundo plano (mira la consola de IntelliJ); recarga en unos minutos.
+        </p>
+    </div>
+
+    <!-- Por región -->
+    <section class="seccion">
+        <div class="contenedor">
+            <h2 class="titulo-seccion">Oportunidades por <span class="azul">región</span></h2>
+            <p class="apagado ancho-texto">Procesos abiertos hoy en SECOP II en cada región del país. Abre una región para ver qué tipo de contratos tiene.</p>
+            <div class="regiones">
+                <details th:each="fr : ${datos.regiones()}" class="region">
+                    <summary>
+                        <span class="region-nombre" th:text="${fr.region().nombre()}">Andina</span>
+                        <span class="region-total" th:text="${datos.numero(fr.total())} + ' abiertos'">0</span>
+                    </summary>
+                    <div class="region-cuerpo">
+                        <div class="sectores">
+                            <div th:each="s : ${sectores}" class="sector">
+                                <span th:text="${s.nombre()}"></span>
+                                <b th:text="${datos.numero(fr.porSector().get(s.id()))}"></b>
+                            </div>
+                        </div>
+                        <p class="texto-chico apagado margen-arriba">Por departamento:</p>
+                        <ul class="lista-deps">
+                            <li th:each="d : ${fr.departamentos()}"><span th:text="${d.key}"></span> <b th:text="${d.value}"></b></li>
+                        </ul>
+                        <a th:href="@{/registro}" class="texto-chico">Ver los que son para ti →</a>
+                    </div>
+                </details>
+            </div>
+            <p class="texto-chico apagado margen-arriba" th:text="'Sin contar ' + ${datos.numero(datos.sinDepartamento())} + ' procesos sin departamento definido.'"></p>
+        </div>
+    </section>
+
+    <!-- Cómo funciona -->
+    <section id="como-funciona" class="seccion">
+        <div class="contenedor">
+            <h2 class="titulo-seccion">Cómo <span class="azul">funciona</span></h2>
+            <ol class="pasos">
+                <li><span class="paso-numero">1</span><h3>Eliges tu profesión</h3>
+                    <p>Nos dices a qué te dedicas, en qué departamentos trabajas y qué montos te interesan. Toma dos minutos.</p></li>
+                <li><span class="paso-numero">2</span><h3>Te mostramos solo lo que te sirve</h3>
+                    <p>Cada día revisamos todo lo nuevo de SECOP II y te mostramos los procesos que encajan contigo, ordenados por qué tan bien encajan.</p></li>
+                <li><span class="paso-numero">3</span><h3>Te avisamos por correo</h3>
+                    <p>Recibes las oportunidades nuevas con su valor y fecha de cierre, a tiempo para preparar tu oferta.</p></li>
+            </ol>
+        </div>
+    </section>
+
+    <!-- Dato de impacto -->
+    <section class="seccion" th:if="${datos.porcentaje() != null and datos.ofertasCerrados() >= 100}">
+        <div class="contenedor">
+            <div class="impacto">
+                <p class="impacto-cifra" th:text="${datos.porcentaje()} + '%'">50%</p>
+                <div>
+                    <h2><span th:text="${datos.fraseOfertas()}"></span> <span class="azul-claro">Hay contratos que nadie pelea.</span></h2>
+                    <p class="impacto-nota" th:text="'En mínima cuantía, la modalidad más común: ' + ${datos.numero(datos.ofertasUnaONinguna())} + ' de ' + ${datos.numero(datos.ofertasCerrados())} + ' procesos ya cerrados' + (${datos.desde()} != null ? ' publicados desde el ' + ${datos.desde()} : '') + ' recibieron una oferta o ninguna. Cálculo propio con datos públicos de SECOP II.'"></p>
+                    <a href="/registro" class="boton-principal"><span>Encuentra los tuyos</span><span class="flecha">→</span></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Planes -->
+    <section id="planes" class="seccion">
+        <div class="contenedor">
+            <h2 class="titulo-seccion">Planes <span class="azul">simples</span></h2>
+            <p class="apagado" th:text="'Empiezas con ' + ${diasPrueba} + ' días del plan Profesional gratis.'"></p>
+            <div th:replace="~{fragmentos :: tarjetasPlanes(${planes}, null, true)}"></div>
+        </div>
+    </section>
+
+    <!-- Preguntas -->
+    <section id="preguntas" class="seccion">
+        <div class="contenedor-estrecho">
+            <h2 class="titulo-seccion">Preguntas <span class="azul">frecuentes</span></h2>
+            <details class="pregunta"><summary>¿Es una página oficial del Gobierno?</summary>
+                <p>No. SECOP RADAR es un servicio privado e independiente, no somos una entidad del Gobierno ni estamos afiliados a Colombia Compra Eficiente. Usamos los datos públicos de SECOP II. Para presentar una oferta siempre lo haces directamente en SECOP II.</p></details>
+            <details class="pregunta"><summary>¿Necesito tarjeta para la prueba?</summary>
+                <p th:text="'No. Al crear tu cuenta tienes ' + ${diasPrueba} + ' días del plan Profesional gratis, sin tarjeta ni datos de pago. Cuando termina, tu cuenta pasa al plan Gratis, salvo que decidas contratar un plan.'"></p></details>
+            <details class="pregunta"><summary>¿De dónde salen los datos?</summary>
+                <p>Del portal de datos abiertos del Estado colombiano (datos.gov.co), donde Colombia Compra Eficiente publica los procesos de SECOP II. Los descargamos todos los días y no inventamos ni completamos información.</p></details>
+            <details class="pregunta"><summary>¿Es para buscar empleo?</summary>
+                <p>No. Son contratos con el Estado para personas naturales y empresas que venden bienes o prestan servicios, no vacantes de empleo, pasantías ni prácticas.</p></details>
+            <details class="pregunta" th:if="${correoContacto != null and !correoContacto.isBlank()}"><summary>¿Tengo otra pregunta?</summary>
+                <p th:text="'Escríbenos a ' + ${correoContacto} + ' y te respondemos.'"></p></details>
+        </div>
+    </section>
+
+    <section class="seccion">
+        <div class="contenedor cierre">
+            <h2 class="titulo-seccion">Los procesos cierran en días. <span class="azul">Entérate a tiempo.</span></h2>
+            <a href="/buscar" class="boton boton-borde">Probar una búsqueda sin cuenta</a>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{fragmentos :: pie}"></footer>
+</body>
+</html>

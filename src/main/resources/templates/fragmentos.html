@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(titulo)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${titulo} + ' | SECOP RADAR'">SECOP RADAR</title>
+    <link rel="icon" type="image/png" href="/img/logo-secop-radar-120.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap">
+    <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+
+<!-- Logo -->
+<a th:fragment="logo" href="/" class="logo">
+    <img src="/img/logo-secop-radar-120.png" alt="" width="28" height="28">
+    <span>SECOP <b>RADAR</b></span>
+</a>
+
+<!-- Encabezado de las páginas públicas -->
+<header th:fragment="encabezadoPublico" class="encabezado">
+    <div class="contenedor fila-encabezado">
+        <a href="/" class="logo">
+            <img src="/img/logo-secop-radar-120.png" alt="" width="28" height="28">
+            <span>SECOP <b>RADAR</b></span>
+        </a>
+        <nav class="nav-publica">
+            <a href="/buscar">Buscar</a>
+            <a href="/#planes">Planes</a>
+            <th:block th:if="${usuario == null}">
+                <a href="/login">Ingresar</a>
+                <a href="/registro" class="boton boton-ambar boton-chico">Crear cuenta</a>
+            </th:block>
+            <a th:if="${usuario != null}" href="/dashboard" class="boton boton-ambar boton-chico">Mi panel</a>
+        </nav>
+    </div>
+</header>
+
+<!-- Encabezado de la app (con sesión) -->
+<header th:fragment="encabezadoApp" class="encabezado">
+    <div class="contenedor fila-encabezado">
+        <div class="fila-nav">
+            <a href="/" class="logo">
+                <img src="/img/logo-secop-radar-120.png" alt="" width="28" height="28">
+                <span>SECOP <b>RADAR</b></span>
+            </a>
+            <input type="checkbox" id="menu-movil" class="menu-movil-check">
+            <label for="menu-movil" class="menu-movil-boton" aria-label="Menú">☰</label>
+            <nav class="nav-app">
+                <a href="/dashboard" th:classappend="${ruta == '/dashboard'} ? 'activo'">Oportunidades</a>
+                <a href="/perfiles" th:classappend="${ruta == '/perfiles'} ? 'activo'">Mis búsquedas</a>
+                <a href="/planes" th:classappend="${ruta == '/planes'} ? 'activo'">Planes</a>
+                <a href="/cuenta" th:classappend="${ruta == '/cuenta'} ? 'activo'">Mi cuenta</a>
+                <a href="/admin" th:if="${usuario != null and usuario.esAdmin()}" th:classappend="${ruta == '/admin'} ? 'activo'">Admin</a>
+                <span class="nav-email" th:text="${usuario?.email}"></span>
+                <form method="post" action="/logout" class="en-linea">
+                    <button type="submit" class="enlace">Salir</button>
+                </form>
+            </nav>
+        </div>
+    </div>
+</header>
+
+<!-- Pie de página -->
+<footer th:fragment="pie" class="pie">
+    <div class="contenedor fila-pie">
+        <p>SECOP RADAR — Licitaciones del Estado filtradas para ti. Servicio privado e independiente; no es una página del Gobierno.</p>
+        <p>
+            <a href="/terminos">Términos y condiciones</a> ·
+            <a href="/privacidad">Política de datos personales</a> ·
+            Datos públicos de <a href="https://www.datos.gov.co" target="_blank" rel="noopener">datos.gov.co</a>
+        </p>
+    </div>
+</footer>
+
+<!-- Tarjetas de planes (portada y /planes) -->
+<div th:fragment="tarjetasPlanes(planes, actual, publico)" class="planes">
+    <div th:each="p : ${planes}" class="plan" th:classappend="${p.id() == 'profesional'} ? 'plan-destacado'">
+        <span th:if="${p.id() == 'profesional'}" class="plan-insignia">Incluido en la prueba gratis</span>
+        <h3 th:text="${p.nombre()}">Plan</h3>
+        <p class="plan-precio">
+            <b th:text="${p.precioTexto()}">$0</b>
+            <span class="apagado"> / mes</span>
+        </p>
+        <ul class="plan-beneficios">
+            <li th:each="b : ${p.beneficios()}" th:classappend="${b.startsWith('Sin')} ? 'sin'" th:text="${b}"></li>
+        </ul>
+        <a th:if="${publico}" href="/registro" class="boton" th:classappend="${p.id() == 'profesional'} ? 'boton-ambar' : 'boton-borde'"
+           th:text="${p.id() == 'profesional'} ? 'Probar 30 días gratis' : (${p.precioMensual() > 0} ? 'Empezar con la prueba' : 'Crear cuenta gratis')">Crear cuenta</a>
+        <span th:if="${!publico and actual != null and actual.id() == p.id()}" class="plan-actual">Tu plan actual</span>
+    </div>
+</div>
+
+<!-- Grupo obligatorio del formulario de perfiles: opciones + "todos" + "otro" con texto libre -->
+<div th:fragment="grupoOpciones(g)" class="grupo margen-arriba" th:attr="data-grupo=${g.campo()}">
+    <label class="etiqueta" th:text="${g.titulo()} + ' *'">Grupo</label>
+    <p class="texto-chico apagado" th:if="${g.ayuda() != null}" th:text="${g.ayuda()}"></p>
+    <div class="casillas">
+        <label class="casilla-chip especial">
+            <input type="checkbox" th:attr="data-todos=${g.campo()}"><span th:text="${g.etiquetaTodos()}"></span>
+        </label>
+        <label th:each="o : ${g.opciones()}" class="casilla-chip" th:title="${o.titulo()}">
+            <input type="checkbox" th:attr="data-campo=${g.campo()}" th:value="${o.valor()}"><span th:text="${o.label()}"></span>
+        </label>
+        <label class="casilla-chip especial">
+            <input type="checkbox" th:attr="data-otro=${g.campo()}"><span th:text="${g.etiquetaOtro()}"></span>
+        </label>
+    </div>
+    <div class="oculto margen-arriba" th:attr="data-otro-caja=${g.campo()}">
+        <input th:if="${g.campo() != 'rangos_valor'}" class="campo" maxlength="200"
+               th:attr="data-otro-texto=${g.campo()}" th:placeholder="${g.placeholderOtro()}">
+        <div th:if="${g.campo() == 'rangos_valor'}" class="fila-input">
+            <input id="rango-otro-min" class="campo" inputmode="numeric" placeholder="Mínimo en pesos, ej: 5.000.000">
+            <input id="rango-otro-max" class="campo" inputmode="numeric" placeholder="Máximo en pesos (vacío = sin tope)">
+        </div>
+    </div>
+    <p class="error-campo oculto" th:attr="data-error=${g.campo()}"></p>
+</div>
+
+<!-- Tarjeta de una oportunidad -->
+<article th:fragment="tarjeta(o, mostrarPerfil)" class="tarjeta-oportunidad" th:classappend="'borde-' + ${o.estado().clase()}">
+    <div class="tarjeta-cabeza">
+        <div class="min0">
+            <p class="texto-chico apagado" th:text="${o.entidad()}">Entidad</p>
+            <h2 class="tarjeta-titulo" th:text="${o.objeto()}">Objeto</h2>
+        </div>
+        <span class="pildora-puntos" th:text="${o.score()} + ' pts'">0 pts</span>
+    </div>
+    <span th:if="${o.avisoTemprano()}" class="etiqueta-peligro">Aviso temprano — aún no es contrato</span>
+    <div class="tarjeta-datos">
+        <span class="estado" th:classappend="${o.estado().clase()}"><span class="punto"></span><span th:text="${o.estado().label()}"></span></span>
+        <span th:text="${o.valor()}"></span>
+        <span th:text="${o.departamento()}"></span>
+        <span th:text="${o.modalidad()}"></span>
+        <span th:if="${o.textoCierre() != null}" th:text="${o.textoCierre()}" th:title="'Fecha de cierre: ' + ${o.fechaCierre()}"></span>
+    </div>
+    <div class="tarjeta-pie">
+        <a th:if="${o.url() != null}" th:href="${o.url()}" target="_blank" rel="noopener noreferrer">Ver en SECOP</a>
+        <span th:if="${mostrarPerfil and o.perfil() != null}" class="texto-chico apagado" th:text="'Perfil: ' + ${o.perfil()}"></span>
+    </div>
+</article>
+
+</body>
+</html>

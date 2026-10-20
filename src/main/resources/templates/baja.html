@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos :: head('Alertas por correo')}"></head>
+<body class="fondo-suave">
+<main class="centro">
+    <div class="caja-auth">
+        <h1>Alertas por correo</h1>
+        <p th:if="${!valido}" class="aviso aviso-error">El enlace no es válido.</p>
+        <p th:if="${hecho}">Listo: ya no recibirás alertas por correo. Puedes volver a activarlas desde Mi cuenta.</p>
+        <form th:if="${valido and hecho == null}" method="post" action="/alertas/baja" class="formulario">
+            <input type="hidden" name="u" th:value="${u}">
+            <input type="hidden" name="t" th:value="${t}">
+            <p>¿Quieres dejar de recibir las alertas de oportunidades nuevas?</p>
+            <button type="submit" class="boton boton-borde">Sí, no quiero más alertas</button>
+        </form>
+        <p class="centro-texto margen-arriba"><a href="/">Ir al inicio</a></p>
+    </div>
+</main>
+</body>
+</html>

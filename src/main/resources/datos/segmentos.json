@@ -1,0 +1,127 @@
+[
+ {
+  "code": "72",
+  "label": "Construcción y mantenimiento de infraestructura",
+  "ejemplos": "construcción, obra civil, mantenimiento, remodelación, infraestructura vial"
+ },
+ {
+  "code": "80",
+  "label": "Gestión, administración, contabilidad y servicios legales",
+  "ejemplos": "contabilidad, auditoría, nómina, abogado, jurídico, talento humano, consultoría empresarial"
+ },
+ {
+  "code": "81",
+  "label": "Ingeniería, arquitectura e investigación",
+  "ejemplos": "ingeniería civil, arquitectura, diseño estructural, software, interventoría técnica, investigación aplicada"
+ },
+ {
+  "code": "78",
+  "label": "Transporte, almacenamiento y logística",
+  "ejemplos": "transporte de carga, logística, almacenamiento, mensajería, distribución"
+ },
+ {
+  "code": "93",
+  "label": "Servicios políticos y asuntos cívicos",
+  "ejemplos": "participación ciudadana, asuntos públicos, gestión comunitaria"
+ },
+ {
+  "code": "43",
+  "label": "Tecnología, software y telecomunicaciones",
+  "ejemplos": "desarrollo de software, redes, telecomunicaciones, soporte TI, ciberseguridad"
+ },
+ {
+  "code": "85",
+  "label": "Salud",
+  "ejemplos": "medicina, enfermería, salud ocupacional, servicios hospitalarios"
+ },
+ {
+  "code": "90",
+  "label": "Turismo, alimentación y hotelería",
+  "ejemplos": "turismo, hotelería, catering, eventos, restaurantes"
+ },
+ {
+  "code": "46",
+  "label": "Seguridad, defensa y equipos de protección",
+  "ejemplos": "seguridad privada, vigilancia, elementos de protección personal"
+ },
+ {
+  "code": "84",
+  "label": "Servicios financieros y de seguros",
+  "ejemplos": "seguros, banca, servicios financieros, corretaje"
+ },
+ {
+  "code": "53",
+  "label": "Textiles, vestuario y cuidado personal",
+  "ejemplos": "dotaciones, uniformes, textiles, cuidado personal"
+ },
+ {
+  "code": "42",
+  "label": "Equipos y suministros médicos",
+  "ejemplos": "equipos médicos, insumos hospitalarios, dispositivos médicos"
+ },
+ {
+  "code": "25",
+  "label": "Vehículos y equipos de transporte",
+  "ejemplos": "vehículos, maquinaria de transporte, repuestos automotrices"
+ },
+ {
+  "code": "41",
+  "label": "Laboratorio, medición y equipos de prueba",
+  "ejemplos": "laboratorio, equipos de medición, calibración"
+ },
+ {
+  "code": "50",
+  "label": "Alimentos y bebidas",
+  "ejemplos": "alimentos, bebidas, suministro de alimentos"
+ },
+ {
+  "code": "82",
+  "label": "Diseño gráfico, editorial y artes",
+  "ejemplos": "diseño gráfico, publicidad, artes, edición"
+ },
+ {
+  "code": "15",
+  "label": "Combustibles y lubricantes",
+  "ejemplos": "combustibles, lubricantes, hidrocarburos"
+ },
+ {
+  "code": "44",
+  "label": "Equipos y suministros de oficina",
+  "ejemplos": "papelería, mobiliario de oficina, insumos de oficina"
+ },
+ {
+  "code": "86",
+  "label": "Educación y formación",
+  "ejemplos": "educación, capacitación, formación docente"
+ },
+ {
+  "code": "40",
+  "label": "Climatización, plomería y sistemas de distribución",
+  "ejemplos": "climatización, plomería, ventilación, HVAC"
+ },
+ {
+  "code": "77",
+  "label": "Servicios medioambientales",
+  "ejemplos": "medio ambiente, gestión ambiental, sostenibilidad"
+ },
+ {
+  "code": "39",
+  "label": "Sistemas eléctricos y de distribución",
+  "ejemplos": "sistema eléctrico, redes eléctricas, tableros eléctricos, subestaciones, inversores eléctricos, bombeo"
+ },
+ {
+  "code": "92",
+  "label": "Defensa, orden público y seguridad",
+  "ejemplos": "vigilancia y seguridad privada, protección de bienes, seguridad con armas, monitoreo y alarmas, orden público"
+ },
+ {
+  "code": "70",
+  "label": "Agricultura, jardinería y silvicultura",
+  "ejemplos": "jardinería, zonas verdes, poda, viveros, reforestación"
+ },
+ {
+  "code": "76",
+  "label": "Aseo y limpieza industrial",
+  "ejemplos": "aseo y cafetería, servicios generales, desinfección, recolección de residuos, gestión documental"
+ }
+]

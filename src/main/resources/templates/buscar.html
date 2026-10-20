@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos :: head('Buscar licitaciones')}"></head>
+<body>
+<header th:replace="~{fragmentos :: encabezadoPublico}"></header>
+
+<main class="contenedor-app">
+    <h1>Busca licitaciones abiertas</h1>
+    <p class="apagado margen-abajo">Sin cuenta y sin guardar nada. Escribe lo que haces o elige tu profesión.</p>
+
+    <div class="caja">
+        <form method="get" action="/buscar" class="form-busqueda">
+            <label for="texto" class="etiqueta">Texto libre</label>
+            <div class="fila-input">
+                <input id="texto" name="texto" type="search" maxlength="200" th:value="${texto}"
+                       placeholder='Ej: "soporte técnico" OR redes -licencias' class="campo">
+                <button type="submit" class="boton boton-azul">Buscar</button>
+            </div>
+            <p class="texto-chico apagado">Usa "comillas" para una frase exacta, OR para alternativas y -palabra para excluir.</p>
+        </form>
+        <form method="get" action="/buscar" class="form-busqueda margen-arriba">
+            <label for="profesion" class="etiqueta">O elige tu profesión</label>
+            <div class="fila-input">
+                <select id="profesion" name="profesion" class="campo" onchange="this.form.submit()">
+                    <option value="">Elige una profesión...</option>
+                    <option th:each="p : ${profesiones}" th:value="${p.id()}" th:text="${p.nombre()}" th:selected="${p.id() == profesionId}"></option>
+                </select>
+                <button type="submit" class="boton boton-borde">Ver</button>
+            </div>
+        </form>
+    </div>
+
+    <p th:if="${error}" class="aviso aviso-error" th:text="${error}"></p>
+    <p th:if="${aviso}" class="aviso aviso-alerta" th:text="${aviso}"></p>
+
+    <th:block th:if="${resultado != null}">
+        <p class="resultado-frase" th:if="${resultado.total() == 0}">No encontramos procesos vigentes con esa búsqueda. Prueba con otras palabras.</p>
+        <p class="resultado-frase" th:if="${resultado.total() > 0}"
+           th:text="${resultado.total()} + ' proceso' + (${resultado.total()} == 1 ? '' : 's') + ' vigente' + (${resultado.total()} == 1 ? '' : 's') + '. Estos son los ' + ${#lists.size(resultado.oportunidades())} + ' más relevantes:'"></p>
+        <div class="lista">
+            <th:block th:each="o : ${resultado.oportunidades()}"><article th:replace="~{fragmentos :: tarjeta(${o}, false)}"></article></th:block>
+        </div>
+        <div class="caja caja-acento margen-arriba" th:if="${resultado.total() > 0}">
+            <p><b>¿Quieres verlos todos y recibirlos por correo?</b> Crea un perfil con tu profesión, departamentos y montos.</p>
+            <a href="/registro" class="boton boton-ambar margen-arriba">Crear cuenta gratis</a>
+        </div>
+    </th:block>
+</main>
+
+<footer th:replace="~{fragmentos :: pie}"></footer>
+</body>
+</html>

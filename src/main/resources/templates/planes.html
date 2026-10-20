@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos :: head('Planes')}"></head>
+<body class="app">
+<header th:replace="~{fragmentos :: encabezadoApp}"></header>
+
+<main class="contenedor-app">
+    <h1>Planes</h1>
+    <p class="apagado" th:if="${plan.origen() == 'prueba'}"
+       th:text="'Estás en la prueba del plan ' + ${plan.nombre()} + ': te quedan ' + ${plan.diasRestantes()} + ' día' + (${plan.diasRestantes()} == 1 ? '' : 's') + '.'"></p>
+    <p class="apagado" th:unless="${plan.origen() == 'prueba'}" th:text="'Tu plan actual: ' + ${plan.nombre()} + '.'"></p>
+
+    <div th:replace="~{fragmentos :: tarjetasPlanes(${planes}, ${plan}, false)}"></div>
+
+    <div class="aviso aviso-info margen-arriba">
+        <b>Versión local:</b> los pagos con Mercado Pago (suscripción y pago único) no están incluidos en esta versión Java.
+        Un administrador puede asignar el plan de cualquier cuenta desde <a href="/admin">/admin</a>.
+    </div>
+</main>
+
+<footer th:replace="~{fragmentos :: pie}"></footer>
+</body>
+</html>

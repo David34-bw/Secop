@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos :: head('Ingresar')}"></head>
+<body class="fondo-suave">
+<main class="centro">
+    <div class="caja-auth">
+        <a href="/" class="logo logo-centro">
+            <img src="/img/logo-secop-radar-120.png" alt="" width="32" height="32">
+            <span>SECOP <b>RADAR</b></span>
+        </a>
+        <h1>Ingresa a tu cuenta</h1>
+        <p th:if="${error}" class="aviso aviso-error" th:text="${error}"></p>
+        <form method="post" action="/login" class="formulario">
+            <label class="etiqueta" for="email">Correo</label>
+            <input class="campo" id="email" name="email" type="email" required autocomplete="email" th:value="${email}">
+            <label class="etiqueta" for="password">Contraseña</label>
+            <input class="campo" id="password" name="password" type="password" required autocomplete="current-password">
+            <button type="submit" class="boton boton-azul ancho-completo">Ingresar</button>
+        </form>
+        <p class="texto-chico apagado centro-texto">¿No tienes cuenta? <a href="/registro">Regístrate</a></p>
+    </div>
+</main>
+</body>
+</html>
