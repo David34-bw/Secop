@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane fitToWidth="true" styleClass="desplazable" xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="co.secopradar.controlador.BuscarControlador">
+    <VBox styleClass="pagina" spacing="14">
+        <padding><Insets top="26" right="32" bottom="32" left="32"/></padding>
+        <Label styleClass="titulo-pagina" text="Busca licitaciones abiertas"/>
+        <Label styleClass="apagado" text="Sin guardar nada. Escribe lo que haces o elige una profesión."/>
+
+        <VBox styleClass="caja" spacing="8">
+            <padding><Insets top="16" right="16" bottom="16" left="16"/></padding>
+            <Label styleClass="etiqueta" text="Texto libre"/>
+            <HBox spacing="8">
+                <TextField fx:id="texto" promptText="Ej: &quot;soporte técnico&quot; OR redes -licencias" HBox.hgrow="ALWAYS"
+                           onAction="#buscarTexto"/>
+                <Button text="Buscar" styleClass="boton-azul" onAction="#buscarTexto"/>
+            </HBox>
+            <Label styleClass="texto-chico" wrapText="true"
+                   text="Usa &quot;comillas&quot; para una frase exacta, OR para alternativas y -palabra para excluir."/>
+            <Label styleClass="etiqueta" text="O elige una profesión">
+                <VBox.margin><Insets top="8"/></VBox.margin>
+            </Label>
+            <ComboBox fx:id="profesion" promptText="Elige una profesión..." prefWidth="420"/>
+        </VBox>
+
+        <Label fx:id="aviso" styleClass="aviso-alerta" wrapText="true" maxWidth="Infinity"/>
+        <HBox spacing="8" alignment="CENTER_LEFT">
+            <ProgressIndicator fx:id="cargando" prefWidth="22" prefHeight="22"/>
+            <Label fx:id="resultado" styleClass="resultado-frase" wrapText="true"/>
+        </HBox>
+        <VBox fx:id="lista" spacing="12"/>
+    </VBox>
+</ScrollPane>

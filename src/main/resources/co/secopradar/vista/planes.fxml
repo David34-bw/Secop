@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane fitToWidth="true" styleClass="desplazable" xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="co.secopradar.controlador.PlanesControlador">
+    <VBox styleClass="pagina" spacing="14">
+        <padding><Insets top="26" right="32" bottom="32" left="32"/></padding>
+        <Label styleClass="titulo-pagina" text="Planes"/>
+        <Label fx:id="planActual" styleClass="apagado" wrapText="true"/>
+        <HBox fx:id="tarjetas" spacing="16"/>
+        <Label styleClass="aviso-info" wrapText="true" maxWidth="Infinity"
+               text="Versión de escritorio: los pagos con Mercado Pago no están incluidos. Un administrador puede asignar el plan de cualquier cuenta desde Administración."/>
+    </VBox>
+</ScrollPane>

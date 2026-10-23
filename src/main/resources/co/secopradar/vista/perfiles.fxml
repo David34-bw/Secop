@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane fitToWidth="true" styleClass="desplazable" xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="co.secopradar.controlador.PerfilesControlador">
+    <VBox styleClass="pagina" spacing="14">
+        <padding><Insets top="26" right="32" bottom="32" left="32"/></padding>
+        <HBox alignment="CENTER_LEFT" spacing="12">
+            <VBox spacing="4" HBox.hgrow="ALWAYS">
+                <Label styleClass="titulo-pagina" text="Mis búsquedas"/>
+                <Label styleClass="apagado" wrapText="true"
+                       text="Cada perfil describe un tipo de contrato que te interesa. Cruzamos cada perfil con los procesos vigentes de SECOP II."/>
+            </VBox>
+            <Region/>
+            <Button fx:id="botonNuevo" text="+ Nuevo perfil" styleClass="boton-ambar" onAction="#nuevoPerfil"/>
+        </HBox>
+
+        <Label fx:id="bienvenida" styleClass="aviso-exito" maxWidth="Infinity" wrapText="true"
+               text="¡Bienvenido! Crea tu primer perfil de búsqueda para ver tus oportunidades."/>
+        <HBox fx:id="cajaLimite" styleClass="aviso-alerta" spacing="6" alignment="CENTER_LEFT">
+            <Label fx:id="textoLimite" wrapText="true"/>
+            <Hyperlink text="Ver planes" onAction="#verPlanes"/>
+        </HBox>
+
+        <VBox fx:id="vacio" styleClass="caja" spacing="10">
+            <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+            <Label text="Todavía no tienes perfiles de búsqueda."/>
+            <Label styleClass="texto-chico" wrapText="true"
+                   text="Elige tu profesión y te prellenamos las áreas y palabras clave. Toma dos minutos."/>
+        </VBox>
+        <VBox fx:id="lista" spacing="12"/>
+    </VBox>
+</ScrollPane>

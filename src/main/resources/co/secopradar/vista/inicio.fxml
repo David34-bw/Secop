@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane fitToWidth="true" styleClass="desplazable" xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="co.secopradar.controlador.InicioControlador">
+    <VBox styleClass="pagina" spacing="18">
+        <StackPane styleClass="hero">
+            <VBox styleClass="hero-capa" spacing="10" StackPane.alignment="CENTER_LEFT">
+                <padding><Insets top="34" right="36" bottom="34" left="36"/></padding>
+                <Label styleClass="hero-titulo" wrapText="true" text="Licitaciones y contratos del Estado en Colombia"/>
+                <Label styleClass="hero-texto" wrapText="true"
+                       text="Te mostramos solo los procesos de SECOP II que son para ti, y te avisamos antes de que cierren."/>
+            </VBox>
+        </StackPane>
+
+        <VBox spacing="18">
+            <padding><Insets right="32" bottom="32" left="32"/></padding>
+            <Label styleClass="subtitulo" text="Hoy en Colombia"/>
+            <HBox spacing="14">
+                <VBox styleClass="cifra" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                    <Label fx:id="abiertos" styleClass="cifra-numero, azul-texto" text="0"/>
+                    <Label styleClass="texto-chico" text="procesos abiertos"/>
+                </VBox>
+                <VBox styleClass="cifra" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                    <Label fx:id="nuevosHoy" styleClass="cifra-numero, azul-texto" text="0"/>
+                    <Label styleClass="texto-chico" text="nuevos hoy"/>
+                </VBox>
+                <VBox styleClass="cifra" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                    <Label fx:id="cierranSemana" styleClass="cifra-numero, azul-texto" text="0"/>
+                    <Label styleClass="texto-chico" text="cierran esta semana"/>
+                </VBox>
+            </HBox>
+            <Label fx:id="avisoVacio" styleClass="aviso-info" wrapText="true" maxWidth="Infinity"
+                   text="Todavía no hay procesos en la base. La aplicación los está descargando de SECOP II en segundo plano (mira la barra de abajo); vuelve a esta pantalla en un momento."/>
+
+            <Label styleClass="subtitulo" text="Oportunidades por región"/>
+            <Label styleClass="apagado" wrapText="true" text="Procesos abiertos hoy en SECOP II en cada región del país, por tipo de contrato."/>
+            <TableView fx:id="tablaRegiones" prefHeight="240">
+                <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/></columnResizePolicy>
+                <placeholder><Label text="Todavía no hay procesos abiertos." styleClass="texto-chico"/></placeholder>
+                <columns>
+                    <TableColumn fx:id="colRegion" text="Región" prefWidth="120"/>
+                    <TableColumn fx:id="colTotal" text="Abiertos" prefWidth="80"/>
+                    <TableColumn fx:id="colServicios" text="Prestación de servicios" prefWidth="150"/>
+                    <TableColumn fx:id="colObra" text="Obra" prefWidth="70"/>
+                    <TableColumn fx:id="colCompraventa" text="Compraventa" prefWidth="100"/>
+                    <TableColumn fx:id="colSuministros" text="Suministros" prefWidth="95"/>
+                    <TableColumn fx:id="colConsultoria" text="Consultoría e interventoría" prefWidth="170"/>
+                    <TableColumn fx:id="colOtros" text="Otros" prefWidth="70"/>
+                </columns>
+            </TableView>
+            <Label fx:id="departamentos" styleClass="texto-chico" wrapText="true"/>
+
+            <VBox fx:id="cajaImpacto" styleClass="impacto" spacing="8">
+                <padding><Insets top="26" right="30" bottom="26" left="30"/></padding>
+                <HBox spacing="24" alignment="CENTER_LEFT">
+                    <Label fx:id="porcentaje" styleClass="impacto-cifra"/>
+                    <VBox spacing="8" HBox.hgrow="ALWAYS">
+                        <Label fx:id="fraseOfertas" styleClass="impacto-titulo" wrapText="true"/>
+                        <Label fx:id="notaOfertas" styleClass="impacto-nota" wrapText="true"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+        </VBox>
+    </VBox>
+</ScrollPane>

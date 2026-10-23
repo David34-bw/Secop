@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="co.secopradar.controlador.PrincipalControlador" styleClass="ventana">
+    <left>
+        <VBox styleClass="menu-lateral" spacing="4" prefWidth="210">
+            <padding><Insets top="18" right="12" bottom="16" left="12"/></padding>
+            <HBox alignment="CENTER_LEFT" spacing="8">
+                <VBox.margin><Insets bottom="18" left="6"/></VBox.margin>
+                <ImageView fitHeight="28" fitWidth="28" preserveRatio="true">
+                    <Image url="@img/logo-secop-radar-120.png"/>
+                </ImageView>
+                <Label styleClass="logo-texto-claro" text="SECOP RADAR"/>
+            </HBox>
+            <Button fx:id="botonInicio" text="Inicio" styleClass="boton-menu" maxWidth="Infinity" onAction="#irAInicio"/>
+            <Button fx:id="botonOportunidades" text="Oportunidades" styleClass="boton-menu" maxWidth="Infinity" onAction="#irAOportunidades"/>
+            <Button fx:id="botonPerfiles" text="Mis búsquedas" styleClass="boton-menu" maxWidth="Infinity" onAction="#irAPerfiles"/>
+            <Button fx:id="botonBuscar" text="Buscar" styleClass="boton-menu" maxWidth="Infinity" onAction="#irABuscar"/>
+            <Button fx:id="botonPlanes" text="Planes" styleClass="boton-menu" maxWidth="Infinity" onAction="#irAPlanes"/>
+            <Button fx:id="botonCuenta" text="Mi cuenta" styleClass="boton-menu" maxWidth="Infinity" onAction="#irACuenta"/>
+            <Button fx:id="botonAdmin" text="Administración" styleClass="boton-menu" maxWidth="Infinity" onAction="#irAAdmin"/>
+            <Region VBox.vgrow="ALWAYS"/>
+            <Label fx:id="email" styleClass="menu-email" wrapText="true"/>
+            <Button text="Cerrar sesión" styleClass="boton-menu-salir" maxWidth="Infinity" onAction="#salir"/>
+        </VBox>
+    </left>
+    <center>
+        <StackPane fx:id="contenido" styleClass="contenido"/>
+    </center>
+    <bottom>
+        <HBox styleClass="barra-estado" alignment="CENTER_LEFT" spacing="8">
+            <padding><Insets top="6" right="14" bottom="6" left="14"/></padding>
+            <Label fx:id="indicador" styleClass="punto-estado"/>
+            <Label fx:id="estado" styleClass="texto-chico"/>
+        </HBox>
+    </bottom>
+</BorderPane>

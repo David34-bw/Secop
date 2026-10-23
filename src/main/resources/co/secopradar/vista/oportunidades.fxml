@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane fitToWidth="true" styleClass="desplazable" xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="co.secopradar.controlador.OportunidadesControlador">
+    <VBox fx:id="pagina" styleClass="pagina" spacing="14">
+        <padding><Insets top="26" right="32" bottom="32" left="32"/></padding>
+        <Label fx:id="saludo" styleClass="titulo-pagina" text="Hola"/>
+        <Label fx:id="resumen" styleClass="apagado" wrapText="true"/>
+
+        <!-- Avisos dentro de la app (reemplazan los correos de alerta) -->
+        <HBox fx:id="cajaNuevas" styleClass="caja-acento" spacing="12" alignment="CENTER_LEFT">
+            <padding><Insets top="12" right="16" bottom="12" left="16"/></padding>
+            <Label fx:id="textoNuevas" wrapText="true" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+            <Button text="Entendido" styleClass="boton-borde" onAction="#marcarNuevasComoVistas"/>
+        </HBox>
+        <HBox fx:id="cajaPrueba" styleClass="caja-acento" spacing="8" alignment="CENTER_LEFT">
+            <padding><Insets top="12" right="16" bottom="12" left="16"/></padding>
+            <Label fx:id="textoPrueba" wrapText="true"/>
+            <Hyperlink text="Ver planes" onAction="#verPlanes"/>
+        </HBox>
+        <HBox fx:id="cajaOcultas" styleClass="caja-acento" spacing="8" alignment="CENTER_LEFT">
+            <padding><Insets top="12" right="16" bottom="12" left="16"/></padding>
+            <Label fx:id="textoOcultas" wrapText="true" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+            <Hyperlink text="Ver planes" onAction="#verPlanes"/>
+        </HBox>
+
+        <VBox fx:id="cajaCifras" spacing="6">
+            <Label styleClass="sobretitulo" text="TOTAL GENERAL — SIN APLICAR FILTROS"/>
+            <HBox spacing="14">
+                <VBox styleClass="cifra" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                    <Label fx:id="cifraTotal" styleClass="cifra-numero" text="0"/>
+                    <Label styleClass="texto-chico" text="oportunidades vigentes"/>
+                </VBox>
+                <VBox styleClass="cifra" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                    <Label fx:id="cifraSemana" styleClass="cifra-numero, urgente-texto" text="0"/>
+                    <Label styleClass="texto-chico" text="cierran esta semana"/>
+                </VBox>
+                <VBox styleClass="cifra" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                    <Label fx:id="cifraValor" styleClass="cifra-numero" text="\$0"/>
+                    <Label styleClass="texto-chico" text="valor total"/>
+                </VBox>
+            </HBox>
+        </VBox>
+
+        <VBox fx:id="cajaSinPerfiles" styleClass="caja" spacing="10">
+            <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+            <Label text="Todavía no tienes perfiles de búsqueda."/>
+            <Button text="Crear mi primer perfil" styleClass="boton-azul" onAction="#crearPerfil"/>
+        </VBox>
+
+        <!-- Filtros -->
+        <VBox fx:id="cajaFiltros" styleClass="caja" spacing="12">
+            <padding><Insets top="16" right="16" bottom="16" left="16"/></padding>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label fx:id="textoFiltros" styleClass="subtitulo" text="Filtros"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label styleClass="texto-chico" text="Ordenar por"/>
+                <ComboBox fx:id="orden" prefWidth="170"/>
+            </HBox>
+            <GridPane hgap="12" vgap="10">
+                <columnConstraints>
+                    <ColumnConstraints percentWidth="33.3"/>
+                    <ColumnConstraints percentWidth="33.3"/>
+                    <ColumnConstraints percentWidth="33.3"/>
+                </columnConstraints>
+                <VBox spacing="4" GridPane.columnSpan="2">
+                    <Label styleClass="etiqueta-chica" text="Buscar en tus oportunidades"/>
+                    <TextField fx:id="q" promptText="Ej: &quot;soporte técnico&quot; -licencias"/>
+                </VBox>
+                <VBox spacing="4" GridPane.columnIndex="2">
+                    <Label styleClass="etiqueta-chica" text="Entidad"/>
+                    <ComboBox fx:id="entidad" editable="true" maxWidth="Infinity" promptText="Ej: ICBF, Gobernación..."/>
+                </VBox>
+                <VBox spacing="4" GridPane.rowIndex="1">
+                    <Label styleClass="etiqueta-chica" text="Región"/>
+                    <ComboBox fx:id="region" maxWidth="Infinity"/>
+                </VBox>
+                <VBox spacing="4" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                    <Label styleClass="etiqueta-chica" text="Departamento"/>
+                    <ComboBox fx:id="departamento" maxWidth="Infinity"/>
+                </VBox>
+                <VBox spacing="4" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                    <Label styleClass="etiqueta-chica" text="Modalidad"/>
+                    <ComboBox fx:id="modalidad" maxWidth="Infinity"/>
+                </VBox>
+            </GridPane>
+            <VBox spacing="6">
+                <Label styleClass="etiqueta-chica" text="Cierra"/>
+                <HBox spacing="8">
+                    <fx:define><ToggleGroup fx:id="grupoCierre"/></fx:define>
+                    <ToggleButton fx:id="cierreCualquiera" text="Cuando sea" styleClass="chip" toggleGroup="$grupoCierre" selected="true" userData=""/>
+                    <ToggleButton text="Hoy" styleClass="chip" toggleGroup="$grupoCierre" userData="hoy"/>
+                    <ToggleButton text="Esta semana" styleClass="chip" toggleGroup="$grupoCierre" userData="semana"/>
+                    <ToggleButton text="Este mes" styleClass="chip" toggleGroup="$grupoCierre" userData="mes"/>
+                </HBox>
+            </VBox>
+            <VBox spacing="6">
+                <Label styleClass="etiqueta-chica" text="Valor del proceso"/>
+                <FlowPane fx:id="rangosValor" hgap="8" vgap="8"/>
+            </VBox>
+            <Hyperlink fx:id="quitarFiltros" text="Quitar todos los filtros" onAction="#quitarFiltros"/>
+        </VBox>
+
+        <Label fx:id="fraseResultados" styleClass="resultado-frase" wrapText="true"/>
+        <VBox fx:id="vacio" styleClass="caja" spacing="6">
+            <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+            <Label fx:id="textoVacio" wrapText="true"/>
+            <Label fx:id="ayudaVacio" styleClass="texto-chico" wrapText="true"/>
+        </VBox>
+        <VBox fx:id="lista" spacing="12"/>
+        <HBox alignment="CENTER">
+            <Button fx:id="cargarMas" text="Cargar más" styleClass="boton-borde" onAction="#cargarMas"/>
+        </HBox>
+    </VBox>
+</ScrollPane>

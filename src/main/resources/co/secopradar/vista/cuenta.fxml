@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane fitToWidth="true" styleClass="desplazable" xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="co.secopradar.controlador.CuentaControlador">
+    <VBox styleClass="pagina" spacing="14">
+        <padding><Insets top="26" right="32" bottom="32" left="32"/></padding>
+        <Label styleClass="titulo-pagina" text="Mi cuenta"/>
+        <Label fx:id="mensaje" styleClass="aviso-exito" wrapText="true" maxWidth="Infinity"/>
+        <Label fx:id="error" styleClass="aviso-error" wrapText="true" maxWidth="Infinity"/>
+
+        <VBox styleClass="caja" spacing="6">
+            <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+            <Label styleClass="subtitulo" text="Plan"/>
+            <Label fx:id="plan" wrapText="true"/>
+            <VBox fx:id="beneficios" spacing="4"/>
+            <Hyperlink text="Ver planes" onAction="#verPlanes"/>
+        </VBox>
+
+        <VBox styleClass="caja" spacing="8">
+            <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+            <Label styleClass="subtitulo" text="Avisos de oportunidades nuevas"/>
+            <CheckBox fx:id="avisos" text="Mostrarme al entrar las oportunidades nuevas de mis perfiles" onAction="#cambiarAvisos"/>
+            <Label styleClass="texto-chico" wrapText="true"
+                   text="Aparecen arriba en Oportunidades. Solo en los planes que incluyen alertas (Profesional, Empresa y la prueba)."/>
+        </VBox>
+
+        <VBox styleClass="caja" spacing="8">
+            <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+            <Label styleClass="subtitulo" text="Datos"/>
+            <Label fx:id="datos" styleClass="texto-chico" wrapText="true"/>
+            <HBox spacing="8" maxWidth="560">
+                <TextField fx:id="nombre" promptText="Tu nombre" HBox.hgrow="ALWAYS"/>
+                <Button text="Guardar nombre" styleClass="boton-borde" onAction="#guardarNombre"/>
+            </HBox>
+        </VBox>
+
+        <VBox styleClass="caja" spacing="8" maxWidth="Infinity">
+            <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+            <Label styleClass="subtitulo" text="Cambiar contraseña"/>
+            <PasswordField fx:id="actual" promptText="Contraseña actual" maxWidth="360"/>
+            <PasswordField fx:id="nueva" promptText="Contraseña nueva (mínimo 8)" maxWidth="360"/>
+            <Button text="Cambiar contraseña" styleClass="boton-borde" onAction="#cambiarPassword"/>
+        </VBox>
+
+        <HBox spacing="12">
+            <Hyperlink text="Términos y condiciones" onAction="#verTerminos"/>
+            <Hyperlink text="Política de datos personales" onAction="#verPrivacidad"/>
+        </HBox>
+    </VBox>
+</ScrollPane>

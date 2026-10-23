@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox fx:id="tarjeta" styleClass="tarjeta-oportunidad" spacing="6" xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1" fx:controller="co.secopradar.controlador.TarjetaOportunidadControlador">
+    <padding><Insets top="14" right="18" bottom="14" left="18"/></padding>
+    <HBox spacing="12" alignment="TOP_LEFT">
+        <VBox spacing="3" HBox.hgrow="ALWAYS">
+            <Label fx:id="entidad" styleClass="texto-chico" wrapText="true"/>
+            <Label fx:id="objeto" styleClass="tarjeta-titulo" wrapText="true"/>
+        </VBox>
+        <Label fx:id="puntos" styleClass="pildora-puntos" minWidth="-Infinity"/>
+    </HBox>
+    <Label fx:id="avisoTemprano" styleClass="etiqueta-peligro" text="Aviso temprano — aún no es contrato"/>
+    <FlowPane hgap="16" vgap="4">
+        <Label fx:id="estado" styleClass="estado"/>
+        <Label fx:id="valor" styleClass="dato"/>
+        <Label fx:id="departamento" styleClass="dato"/>
+        <Label fx:id="modalidad" styleClass="dato" wrapText="true"/>
+        <Label fx:id="cierre" styleClass="dato"/>
+    </FlowPane>
+    <HBox spacing="14" alignment="CENTER_LEFT">
+        <Hyperlink fx:id="enlace" text="Ver en SECOP" onAction="#abrirEnSecop"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="perfil" styleClass="texto-chico"/>
+    </HBox>
+</VBox>

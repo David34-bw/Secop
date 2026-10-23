@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox fx:id="grupo" styleClass="grupo" spacing="6" xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1" fx:controller="co.secopradar.controlador.GrupoOpcionesControlador">
+    <Label fx:id="titulo" styleClass="etiqueta"/>
+    <Label fx:id="ayuda" styleClass="texto-chico" wrapText="true"/>
+    <FlowPane fx:id="opciones" hgap="8" vgap="8"/>
+    <TextField fx:id="textoOtro" maxWidth="520"/>
+    <HBox fx:id="cajaRango" spacing="8" maxWidth="520">
+        <TextField fx:id="rangoMin" promptText="Mínimo en pesos, ej: 5.000.000" HBox.hgrow="ALWAYS"/>
+        <TextField fx:id="rangoMax" promptText="Máximo en pesos (vacío = sin tope)" HBox.hgrow="ALWAYS"/>
+    </HBox>
+    <Label fx:id="error" styleClass="error-campo" wrapText="true"/>
+</VBox>

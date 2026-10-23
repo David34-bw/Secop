@@ -1,38 +1,35 @@
-# SECOP RADAR — versión Java
+# SECOP RADAR — aplicación de escritorio (JavaFX)
 
-Port a **Java 21 + Spring Boot 3** del proyecto [Julianskuu/Secop-radar](https://github.com/Julianskuu/Secop-radar)
-(originalmente Next.js + PostgreSQL). Descarga a diario los procesos de contratación de **SECOP II** desde
-datos.gov.co, los cruza con los perfiles de búsqueda de cada usuario y muestra las oportunidades ordenadas por
-puntaje.
+Versión de escritorio en **Java 21 + JavaFX (FXML)** del proyecto
+[Julianskuu/Secop-radar](https://github.com/Julianskuu/Secop-radar), que originalmente era una web en Next.js.
+Descarga los procesos de contratación de **SECOP II** desde datos.gov.co, los cruza con los perfiles de búsqueda
+de cada usuario y muestra las oportunidades ordenadas por puntaje.
 
-Corre **en local sin instalar nada más**: la base de datos es H2 en archivo (`./data/secop.mv.db`).
+Todo corre **dentro de la aplicación**: no hay navegador ni servidor web. La base de datos es H2 en un archivo
+local (`./data/secop.mv.db`), así que no hay que instalar nada más.
 
 ---
 
-## Cómo abrirlo y correrlo en IntelliJ IDEA
+## Cómo correrlo en IntelliJ IDEA
 
-1. **Abrir el proyecto**: `File > Open...` y elige la carpeta del proyecto (la que tiene `pom.xml`).
-   Si pregunta, elige **"Open as Project"** y **"Trust Project"**. IntelliJ detecta Maven y descarga las
-   dependencias solo (barra de progreso abajo a la derecha).
-2. **JDK 21**: `File > Project Structure > Project > SDK` → elige **21** (por ejemplo `temurin-21`).
-   Si no aparece: `Add SDK > Download JDK...` → versión 21, cualquier proveedor (Eclipse Temurin está bien).
-3. **Ejecutar**: abre `src/main/java/co/secopradar/SecopRadarApplication.java` y presiona el ▶ verde junto a
-   `main` → **Run 'SecopRadarApplication'**.
-4. Abre **http://localhost:8080**
+1. **Abrir el proyecto**: `File > Open...` → carpeta del proyecto (la que tiene `pom.xml`) → **Trust Project**.
+   IntelliJ detecta Maven y descarga las dependencias (JavaFX, H2, Jackson, jBCrypt).
+   Si ya lo tenías abierto de antes, recarga Maven: panel **Maven** (derecha) → botón 🔄 *Reload All Maven Projects*.
+2. **JDK 21**: `File > Project Structure > Project > SDK` → **21** (por ejemplo `temurin-21`).
+3. **Ejecutar**: abre `src/main/java/co/secopradar/Lanzador.java` y presiona el ▶ verde junto a `main`.
 
-La primera vez que arranca con la base vacía, descarga en segundo plano los procesos de los últimos 7 días
-(tarda segundos; míralo en la consola de IntelliJ: `[ingesta] lote 1: ...`).
+> Ejecuta **`Lanzador`**, no `App`. `Lanzador` existe para que JavaFX cargue sin configurar el *module-path* a mano.
 
-> **La primera cuenta que registres queda como administradora** (ve a `/admin`). Las siguientes son usuarios
-> normales con 30 días de prueba del plan Profesional.
+La primera vez, si la base está vacía, la app descarga en segundo plano los procesos de los últimos 7 días
+(la barra de abajo muestra el avance). **La primera cuenta que se registra queda como administradora.**
 
-### Desde la terminal (opcional)
+Desde la terminal también funciona:
 
 ```bash
-mvnw.cmd spring-boot:run
+mvnw.cmd javafx:run
 ```
 
-Tests (29, portados de los tests originales de Node):
+Tests (36, la mayoría portados de los tests originales):
 
 ```bash
 mvnw.cmd test
@@ -40,69 +37,64 @@ mvnw.cmd test
 
 ---
 
-## Qué incluye
-
-| Original (Next.js) | Versión Java |
-|---|---|
-| `worker/ingesta.mjs` (descarga de datos.gov.co) | `IngestaService` |
-| `worker/coincidencias.mjs` + `lib/matching.js` | `CoincidenciasService` + `Matching` (mismo puntaje) |
-| `worker/planes.mjs` + `lib/limites.js` | `PlanesService` |
-| `worker/alertas.mjs` (correo) | `AlertasService` (opcional, requiere SMTP) |
-| GitHub Action diario (`cron.yml`) | `CronService` con `@Scheduled` (9:00 p. m. hora Colombia) + botón en `/admin` |
-| Portada con datos en vivo | `/` |
-| Búsqueda pública | `/buscar` (texto libre con `"frase"`, `OR`, `-excluir`, o por profesión) |
-| Panel con filtros | `/dashboard` (región, departamento, modalidad, entidad, cierre, valor, orden) |
-| Perfiles (profesión, áreas UNSPSC, palabras clave, exclusiones...) | `/perfiles` con vista previa en vivo |
-| Planes y límites (Gratis / Profesional / Empresa / prueba 30 días) | Igual (`Plan.efectivo`) |
-| Términos y política de datos | `/terminos`, `/privacidad` |
-| Admin | `/admin` (estadísticas, corridas, asignar plan y rol, actualizar ahora) |
-
-### Diferencias con el original
-
-- **Pagos con Mercado Pago**: no incluidos. En su lugar, un admin asigna el plan desde `/admin`.
-- **Verificación de correo con código** y **login con Google**: no incluidos (Google ya estaba apagado en el
-  original). Las cuentas quedan verificadas al registrarse.
-- **Búsqueda de texto**: el original usaba `tsvector`/`websearch_to_tsquery` de PostgreSQL; aquí se hace en
-  Java con las mismas reglas del cruce (palabra completa, plural simple, sin tildes), así funciona igual en H2.
-- **Límite de intentos** (login, registro, búsqueda): en memoria en vez de una tabla.
-
----
-
-## Configuración (`src/main/resources/application.properties`)
-
-| Propiedad | Para qué |
-|---|---|
-| `secop.socrata-app-token` | Token opcional de datos.gov.co (sube el límite de la API) |
-| `secop.ingesta.dias-atras` | Días que descarga cada corrida diaria (5) |
-| `secop.cron` | Hora de la corrida diaria (`0 0 21 * * *`, hora de Colombia) |
-| `spring.mail.*` + `secop.alertas.enviar=true` | Activa las alertas por correo (p. ej. Gmail con contraseña de aplicación) |
-| `secop.secreto` | Clave para firmar los enlaces de "dejar de recibir alertas" |
-
-**Base de datos**: H2 en `./data/`. Consola web en http://localhost:8080/h2-console
-(JDBC URL `jdbc:h2:file:./data/secop`, usuario `sa`, sin contraseña). Para empezar de cero, detén la app y
-borra la carpeta `data`.
-
-**PostgreSQL (opcional)**: crea la base `secop_radar`, ajusta `application-postgres.properties` y activa el
-perfil `postgres` (en IntelliJ: *Edit Configurations > Active profiles: postgres*).
-
----
-
-## Estructura
+## Estructura Modelo-Vista-Controlador
 
 ```
 src/main/java/co/secopradar/
-├── SecopRadarApplication.java   ← main
-├── dominio/      Plan, Perfil, Proceso, Usuario, Region, RangoValor, Modalidades, Catalogo
-├── repositorio/  Acceso a datos con JdbcTemplate
-├── servicio/     Ingesta, cruce (Matching), panel, búsqueda, portada, alertas, cron
-├── util/         Normalización de texto, tipo oración, formatos de pesos y fechas
-└── web/          Controladores, sesión y protección de rutas
+├── Lanzador.java, App.java        ← arranque de JavaFX
+├── modelo/                        ← MODELO: datos y reglas, sin nada de interfaz
+│   ├── Usuario, Perfil, Proceso, Plan, Oportunidad, Region, RangoValor, ...   (entidades)
+│   ├── BorradorPerfil, GrupoOpciones                                          (formulario de perfiles)
+│   ├── dao/        BaseDatos (JDBC + schema.sql), UsuarioDAO, PerfilDAO, ProcesoDAO, CoincidenciaDAO, LogDAO
+│   ├── servicio/   Servicios (arma todo), CuentaService, PerfilesService, IngestaService (datos.gov.co),
+│   │               CoincidenciasService + Matching (puntaje), OportunidadesService, BusquedaService,
+│   │               PortadaService, PlanesService, CronService (actualización diaria), LegalService
+│   └── util/       Texto, TextoOracion, Formato, Registro
+└── controlador/                   ← CONTROLADOR: un controlador por vista FXML
+    ├── Navegador, Pantalla        (carga las vistas y cambia de pantalla)
+    ├── LoginControlador, RegistroControlador, PrincipalControlador
+    ├── InicioControlador, OportunidadesControlador, TarjetaOportunidadControlador
+    ├── PerfilesControlador, TarjetaPerfilControlador, NuevoPerfilControlador, GrupoOpcionesControlador
+    └── BuscarControlador, PlanesControlador, CuentaControlador, AdminControlador, LegalControlador
+
 src/main/resources/
-├── schema.sql    Tablas (compatibles con H2 y PostgreSQL)
-├── datos/        Catálogos: profesiones, segmentos/familias/clases UNSPSC
-├── legal/        Términos y política de datos (Markdown)
-├── templates/    Páginas Thymeleaf
-└── static/       CSS, JS e imágenes
+├── co/secopradar/vista/           ← VISTA: archivos FXML + estilos.css + imágenes
+│   ├── login.fxml, registro.fxml, principal.fxml
+│   ├── inicio.fxml, oportunidades.fxml, tarjetaOportunidad.fxml
+│   ├── perfiles.fxml, tarjetaPerfil.fxml, nuevoPerfil.fxml, grupoOpciones.fxml
+│   └── buscar.fxml, planes.fxml, cuenta.fxml, admin.fxml, legal.fxml
+├── config.properties              ← configuración (token de datos.gov.co, hora de actualización...)
+├── schema.sql                     ← tablas de la base
+├── datos/                         ← catálogos: profesiones y áreas UNSPSC
+└── legal/                         ← términos y política de datos
 ```
-# Secop
-# Secop
+
+- Las vistas (`.fxml`) solo describen la pantalla; se pueden abrir y editar en **Scene Builder**.
+- Los controladores responden a los botones y pasan los datos al modelo; no tienen SQL ni reglas de negocio.
+- El modelo no sabe nada de JavaFX: valida, calcula y guarda.
+
+## Pantallas
+
+| Pantalla | Qué hace |
+|---|---|
+| Ingresar / Crear cuenta | Correo validado (formato, dominio mal escrito, temporal, que el dominio reciba correo) |
+| Inicio | Procesos abiertos hoy, nuevos, por región y tipo de contrato |
+| Oportunidades | Coincidencias de tus perfiles con filtros (texto, entidad, región, departamento, modalidad, cierre, valor) y orden; avisa de las nuevas desde tu última visita |
+| Mis búsquedas / Nuevo perfil | Perfiles con campos obligatorios, opción «Todos» y «Otro» para escribir; vista previa de cuántos procesos coinciden |
+| Buscar | Búsqueda libre (`"frase"`, `OR`, `-excluir`) o por profesión |
+| Planes / Mi cuenta | Plan y límites, avisos, nombre y contraseña |
+| Administración | Estadísticas, descargar de SECOP ahora, historial, cambiar plan y rol de usuarios |
+
+## Diferencias con la web original
+
+- Los **correos de alerta** se reemplazaron por **avisos dentro de la app** (en Oportunidades).
+- **Pagos con Mercado Pago**, verificación de correo con código y login con Google no están incluidos;
+  el administrador asigna los planes.
+- La actualización diaria corre mientras la app esté abierta (por defecto a las 21:00, en `config.properties`).
+
+## Base de datos
+
+H2 en `./data/`. Para empezar de cero, cierra la app y borra la carpeta `data`.
+
+> ⚠️ El proyecto está dentro de OneDrive. Si OneDrive borra o deja "solo en línea" archivos del proyecto
+> (como pasó con `src/`), muévelo a una carpeta fuera de OneDrive, por ejemplo `C:\Proyectos\Secop`.

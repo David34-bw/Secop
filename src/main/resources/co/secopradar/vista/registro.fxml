@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane styleClass="fondo-suave" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="co.secopradar.controlador.RegistroControlador">
+    <VBox styleClass="caja-auth" spacing="8" maxWidth="440" maxHeight="-Infinity">
+        <padding><Insets top="28" right="30" bottom="24" left="30"/></padding>
+        <HBox alignment="CENTER" spacing="8">
+            <ImageView fitHeight="34" fitWidth="34" preserveRatio="true">
+                <Image url="@img/logo-secop-radar-120.png"/>
+            </ImageView>
+            <Label styleClass="logo-texto" text="SECOP RADAR"/>
+        </HBox>
+        <Label styleClass="titulo-auth" text="Crea tu cuenta" maxWidth="Infinity" alignment="CENTER"/>
+        <Label styleClass="apagado" text="30 días del plan Profesional gratis. Sin tarjeta." maxWidth="Infinity" alignment="CENTER"/>
+
+        <Label fx:id="error" styleClass="aviso-error" wrapText="true" maxWidth="Infinity" visible="false" managed="false"/>
+
+        <Label styleClass="etiqueta" text="Nombre (opcional)"/>
+        <TextField fx:id="nombre"/>
+
+        <Label styleClass="etiqueta" text="Correo"/>
+        <TextField fx:id="email" promptText="nombre@gmail.com"/>
+        <Label fx:id="errorEmail" styleClass="error-campo" wrapText="true" visible="false" managed="false"/>
+
+        <Label styleClass="etiqueta" text="Contraseña"/>
+        <PasswordField fx:id="password"/>
+        <Label styleClass="texto-chico" text="Mínimo 8 caracteres."/>
+
+        <HBox spacing="6" alignment="TOP_LEFT">
+            <VBox.margin><Insets top="8"/></VBox.margin>
+            <CheckBox fx:id="acepto"/>
+            <FlowPane hgap="3" vgap="0" prefWrapLength="330">
+                <Label text="Acepto los"/>
+                <Hyperlink text="Términos y condiciones" onAction="#verTerminos" styleClass="enlace-compacto"/>
+                <Label text="y autorizo el tratamiento de mis datos según la"/>
+                <Hyperlink text="Política de datos personales" onAction="#verPrivacidad" styleClass="enlace-compacto"/>
+            </FlowPane>
+        </HBox>
+
+        <Button fx:id="botonCrear" text="Crear cuenta" styleClass="boton-ambar" maxWidth="Infinity" defaultButton="true"
+                onAction="#crear">
+            <VBox.margin><Insets top="10"/></VBox.margin>
+        </Button>
+        <HBox alignment="CENTER" spacing="2">
+            <Label styleClass="apagado" text="¿Ya tienes cuenta?"/>
+            <Hyperlink text="Ingresa" onAction="#irALogin"/>
+        </HBox>
+    </VBox>
+</StackPane>
