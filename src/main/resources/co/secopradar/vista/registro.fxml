@@ -6,6 +6,7 @@
 <?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -16,8 +17,8 @@
 
 <StackPane styleClass="fondo-suave" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="co.secopradar.controlador.RegistroControlador">
-    <VBox styleClass="caja-auth" spacing="8" maxWidth="440" maxHeight="-Infinity">
-        <padding><Insets top="28" right="30" bottom="24" left="30"/></padding>
+    <VBox styleClass="caja-auth" spacing="5" maxWidth="470" maxHeight="-Infinity">
+        <padding><Insets top="20" right="30" bottom="18" left="30"/></padding>
         <HBox alignment="CENTER" spacing="8">
             <ImageView fitHeight="34" fitWidth="34" preserveRatio="true">
                 <Image url="@img/logo-secop-radar-120.png"/>
@@ -29,16 +30,22 @@
 
         <Label fx:id="error" styleClass="aviso-error" wrapText="true" maxWidth="Infinity" visible="false" managed="false"/>
 
-        <Label styleClass="etiqueta" text="Nombre (opcional)"/>
-        <TextField fx:id="nombre"/>
+        <Label styleClass="etiqueta" text="Nombre completo *"/>
+        <TextField fx:id="nombre" promptText="Ej: María José Pérez"/>
+        <Label fx:id="errorNombre" styleClass="error-campo" wrapText="true" visible="false" managed="false"/>
 
-        <Label styleClass="etiqueta" text="Correo"/>
+        <Label styleClass="etiqueta" text="Correo *"/>
         <TextField fx:id="email" promptText="nombre@gmail.com"/>
         <Label fx:id="errorEmail" styleClass="error-campo" wrapText="true" visible="false" managed="false"/>
 
-        <Label styleClass="etiqueta" text="Contraseña"/>
+        <Label styleClass="etiqueta" text="Contraseña *"/>
         <PasswordField fx:id="password"/>
-        <Label styleClass="texto-chico" text="Mínimo 8 caracteres."/>
+        <HBox spacing="8" alignment="CENTER_LEFT">
+            <ProgressBar fx:id="barraFuerza" progress="0" maxWidth="Infinity" HBox.hgrow="ALWAYS" styleClass="barra-fuerza"/>
+            <Label fx:id="nivelFuerza" styleClass="texto-chico" minWidth="80"/>
+        </HBox>
+        <!-- Reglas de la contraseña: se marcan en verde a medida que se cumplen -->
+        <FlowPane fx:id="reglasPassword" hgap="12" vgap="1" prefWrapLength="400"/>
 
         <HBox spacing="6" alignment="TOP_LEFT">
             <VBox.margin><Insets top="8"/></VBox.margin>

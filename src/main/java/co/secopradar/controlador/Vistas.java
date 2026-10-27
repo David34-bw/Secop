@@ -42,6 +42,35 @@ final class Vistas {
         a.showAndWait();
     }
 
+    /** Pinta la lista de reglas de la contraseña (✓ verde / • gris) y la barra de fuerza. */
+    static void pintarFuerza(co.secopradar.modelo.servicio.ValidadorPassword.Resultado r, javafx.scene.layout.Pane reglas,
+                             javafx.scene.control.ProgressBar barra, Label nivel, boolean vacia) {
+        reglas.getChildren().clear();
+        for (var regla : r.reglas()) {
+            Label l = new Label((regla.cumple() ? "✓ " : "• ") + regla.descripcion());
+            l.getStyleClass().addAll("texto-chico", regla.cumple() ? "regla-ok" : "regla-falta");
+            l.setMinWidth(190);
+            reglas.getChildren().add(l);
+        }
+        barra.setProgress(vacia ? 0 : r.progreso());
+        String texto = vacia ? "" : switch (r.nivel()) {
+            case MUY_DEBIL -> "Muy débil";
+            case DEBIL -> "Débil";
+            case MEDIA -> "Aceptable";
+            case FUERTE -> "Fuerte";
+        };
+        nivel.setText(texto);
+        for (String c : java.util.List.of("fuerza-muy-debil", "fuerza-debil", "fuerza-media", "fuerza-fuerte")) {
+            barra.getStyleClass().remove(c);
+            nivel.getStyleClass().remove(c);
+        }
+        if (!vacia) {
+            String c = "fuerza-" + r.nivel().name().toLowerCase().replace('_', '-');
+            barra.getStyleClass().add(c);
+            nivel.getStyleClass().add(c);
+        }
+    }
+
     /** Agrega o quita una clase CSS. */
     static void clase(Node n, String clase, boolean activa) {
         n.getStyleClass().remove(clase);

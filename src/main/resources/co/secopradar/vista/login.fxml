@@ -25,6 +25,7 @@
         <Label styleClass="titulo-auth" text="Ingresa a tu cuenta" maxWidth="Infinity" alignment="CENTER"/>
         <Label styleClass="apagado" text="Licitaciones del Estado filtradas para ti" maxWidth="Infinity" alignment="CENTER"/>
 
+        <Label fx:id="avisoConexion" styleClass="aviso-alerta" wrapText="true" maxWidth="Infinity" visible="false" managed="false"/>
         <Label fx:id="error" styleClass="aviso-error" wrapText="true" maxWidth="Infinity" visible="false" managed="false"/>
 
         <Label styleClass="etiqueta" text="Correo"/>
@@ -39,5 +40,6 @@
             <Label styleClass="apagado" text="¿No tienes cuenta?"/>
             <Hyperlink text="Regístrate" onAction="#irARegistro"/>
         </HBox>
+        <Label fx:id="baseDatos" styleClass="texto-chico" maxWidth="Infinity" alignment="CENTER"/>
     </VBox>
 </StackPane>

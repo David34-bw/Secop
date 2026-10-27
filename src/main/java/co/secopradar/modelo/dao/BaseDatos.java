@@ -1,16 +1,20 @@
 package co.secopradar.modelo.dao;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -20,8 +24,11 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Conexión a la base H2 local (./data/secop.mv.db) y ayudas de JDBC que
- * usan todos los DAO. Al iniciar crea las tablas de schema.sql si no existen.
+ * Conexión a la base de datos y ayudas de JDBC que usan todos los DAO.
+ * Funciona con PostgreSQL (Supabase, en la nube) y con H2 (archivo local
+ * ./data/secop.mv.db). Usa un pool de conexiones (HikariCP) para no abrir
+ * una conexión nueva en cada consulta. Al iniciar crea las tablas de
+ * schema.sql si no existen.
  */
 public final class BaseDatos {
 
@@ -47,34 +54,69 @@ public final class BaseDatos {
         }
     }
 
-    private static String url = URL_POR_DEFECTO;
-    // Mantiene la base abierta mientras corre la app: abrir otra conexión es casi gratis.
-    private static Connection guardiana;
+    private static HikariDataSource pool;
+    private static String descripcion = "";
 
     private BaseDatos() {
     }
 
-    public static synchronized void iniciar(String urlJdbc) {
-        url = urlJdbc;
+    /**
+     * Abre el pool de conexiones y crea las tablas si faltan. Lanza
+     * ErrorBaseDatos si no se puede conectar (contraseña mala, sin internet...).
+     */
+    public static synchronized void iniciar(String urlJdbc, String usuario, String password) {
+        iniciar(urlJdbc, usuario, password, null);
+    }
+
+    /**
+     * esquema: en PostgreSQL, el esquema donde viven las tablas (en Supabase,
+     * "secop"). Se fija en cada conexión para que nada termine en "public".
+     */
+    public static synchronized void iniciar(String urlJdbc, String usuario, String password, String esquema) {
+        cerrar();
+        HikariConfig cfg = new HikariConfig();
+        cfg.setJdbcUrl(urlJdbc);
+        cfg.setUsername(usuario);
+        cfg.setPassword(password);
+        cfg.setPoolName("secop");
+        cfg.setMaximumPoolSize(4);
+        cfg.setMinimumIdle(1);
+        cfg.setConnectionTimeout(15_000);
+        // Si no conecta, que falle de una vez (y la app pueda usar la base local).
+        cfg.setInitializationFailTimeout(15_000);
+        if (urlJdbc.startsWith("jdbc:postgresql:") && esquema != null && !esquema.isBlank()) {
+            if (!esquema.matches("[a-z_][a-z0-9_]*")) throw new IllegalArgumentException("Nombre de esquema inválido: " + esquema);
+            cfg.setConnectionInitSql("SET search_path TO " + esquema);
+        }
         try {
-            guardiana = DriverManager.getConnection(url, "sa", "");
+            pool = new HikariDataSource(cfg);
             ejecutarScript("/schema.sql");
-        } catch (SQLException e) {
-            throw new ErrorBaseDatos("No se pudo abrir la base de datos (" + url + "). "
-                    + "¿La aplicación ya está abierta en otra ventana?", e);
+            descripcion = esPostgres() ? "Supabase (PostgreSQL en la nube)" : "base local H2 (" + urlJdbc.replaceAll(";.*", "") + ")";
+        } catch (Exception e) {
+            cerrar();
+            Throwable causa = e;
+            while (causa.getCause() != null && causa.getCause() != causa) causa = causa.getCause();
+            throw new ErrorBaseDatos(causa.getMessage(), e);
         }
     }
 
     public static synchronized void cerrar() {
-        try {
-            if (guardiana != null) guardiana.close();
-        } catch (SQLException ignorada) {
-            // Se está cerrando la app.
-        }
+        if (pool != null) pool.close();
+        pool = null;
     }
 
     public static Connection conexion() throws SQLException {
-        return DriverManager.getConnection(url, "sa", "");
+        if (pool == null) throw new SQLException("La base de datos no está iniciada");
+        return pool.getConnection();
+    }
+
+    public static boolean esPostgres() {
+        return pool != null && pool.getJdbcUrl().startsWith("jdbc:postgresql:");
+    }
+
+    /** "Supabase (PostgreSQL en la nube)" o "base local H2 (...)", para mostrar en la app. */
+    public static String descripcion() {
+        return descripcion;
     }
 
     private static void ejecutarScript(String ruta) throws SQLException {
@@ -118,8 +160,10 @@ public final class BaseDatos {
         }
     }
 
+    /** Primera fila (vacío si no hay filas o si el valor es NULL, como max() en una tabla vacía). */
     public static <T> Optional<T> uno(String sql, Mapeador<T> mapeador, Object... params) {
-        return consultar(sql, mapeador, params).stream().findFirst();
+        List<T> filas = consultar(sql, mapeador, params);
+        return filas.isEmpty() ? Optional.empty() : Optional.ofNullable(filas.get(0));
     }
 
     /** Primera columna de la primera fila como número (count, max...). */
@@ -173,7 +217,12 @@ public final class BaseDatos {
         return consultar(sql, rs -> {
             ResultSetMetaData md = rs.getMetaData();
             Map<String, Object> fila = new LinkedHashMap<>();
-            for (int i = 1; i <= md.getColumnCount(); i++) fila.put(md.getColumnLabel(i).toLowerCase(), rs.getObject(i));
+            for (int i = 1; i <= md.getColumnCount(); i++) {
+                Object v = rs.getObject(i);
+                // PostgreSQL entrega las fechas como Timestamp; H2 como OffsetDateTime. Se unifican.
+                if (v instanceof Timestamp t) v = t.toInstant().atOffset(ZoneOffset.UTC);
+                fila.put(md.getColumnLabel(i).toLowerCase(), v);
+            }
             return fila;
         }, params);
     }

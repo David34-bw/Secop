@@ -5,10 +5,25 @@ Versión de escritorio en **Java 21 + JavaFX (FXML)** del proyecto
 Descarga los procesos de contratación de **SECOP II** desde datos.gov.co, los cruza con los perfiles de búsqueda
 de cada usuario y muestra las oportunidades ordenadas por puntaje.
 
-Todo corre **dentro de la aplicación**: no hay navegador ni servidor web. La base de datos es H2 en un archivo
-local (`./data/secop.mv.db`), así que no hay que instalar nada más.
+Todo corre **dentro de la aplicación**: no hay navegador ni servidor web. Los datos se guardan en
+**Supabase** (PostgreSQL en la nube). Si no hay contraseña configurada o no hay internet, la app usa una base
+local H2 (`./data/secop.mv.db`) y lo avisa.
 
 ---
+
+## Conectar a Supabase (una sola vez)
+
+La contraseña de la base **no está en el código** (no se sube a GitHub):
+
+1. Copia `config.local.properties.ejemplo` como **`config.local.properties`** (en la carpeta del proyecto,
+   junto al `pom.xml`).
+2. Escribe la contraseña de la base de Supabase en `bd.password=`. Está en supabase.com → proyecto
+   **Project_Two** → **Project Settings › Database** (si no la recuerdas: *Reset database password*).
+3. Ejecuta la app: en la pantalla de ingreso dice **"Datos en: Supabase (PostgreSQL en la nube)"**.
+
+Las tablas están en el esquema **`secop`** del proyecto (no en `public`), con RLS activo: no se pueden leer
+con las claves públicas de Supabase, solo desde la app. La primera vez que la app abre con la base vacía
+descarga los procesos de SECOP II de los últimos 7 días.
 
 ## Cómo correrlo en IntelliJ IDEA
 
@@ -77,7 +92,7 @@ src/main/resources/
 
 | Pantalla | Qué hace |
 |---|---|
-| Ingresar / Crear cuenta | Correo validado (formato, dominio mal escrito, temporal, que el dominio reciba correo) |
+| Ingresar / Crear cuenta | Nombre real (solo letras, con vocales, sin números, teclazos ni palabras de relleno), correo validado (formato, dominio mal escrito, temporal, que reciba correo) y contraseña segura (10+ caracteres, mayúscula, minúscula, número, símbolo, sin secuencias, sin repetir, no común, sin tu nombre o correo) con indicador de fuerza |
 | Inicio | Procesos abiertos hoy, nuevos, por región y tipo de contrato |
 | Oportunidades | Coincidencias de tus perfiles con filtros (texto, entidad, región, departamento, modalidad, cierre, valor) y orden; avisa de las nuevas desde tu última visita |
 | Mis búsquedas / Nuevo perfil | Perfiles con campos obligatorios, opción «Todos» y «Otro» para escribir; vista previa de cuántos procesos coinciden |
@@ -94,7 +109,10 @@ src/main/resources/
 
 ## Base de datos
 
-H2 en `./data/`. Para empezar de cero, cierra la app y borra la carpeta `data`.
+- **Supabase** (principal): `config.properties` tiene la conexión (Session pooler, esquema `secop`) y
+  `config.local.properties` la contraseña. También sirve la variable de entorno `SECOP_BD_PASSWORD`.
+- **H2 local** (respaldo): `./data/`. Para empezar de cero, cierra la app y borra la carpeta `data`.
+- La barra de abajo de la app dice cuál se está usando (punto naranja = base local).
 
 > ⚠️ El proyecto está dentro de OneDrive. Si OneDrive borra o deja "solo en línea" archivos del proyecto
 > (como pasó con `src/`), muévelo a una carpeta fuera de OneDrive, por ejemplo `C:\Proyectos\Secop`.

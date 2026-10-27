@@ -5,3 +5,5 @@ data/
 *.iml
 out/
 .claude/
+# Contraseña de Supabase: nunca se sube
+config.local.properties

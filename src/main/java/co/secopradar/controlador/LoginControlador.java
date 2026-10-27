@@ -19,12 +19,16 @@ public class LoginControlador {
     @FXML private PasswordField password;
     @FXML private Label error;
     @FXML private Button botonIngresar;
+    @FXML private Label avisoConexion;
+    @FXML private Label baseDatos;
 
     private final Servicios s = Servicios.get();
 
     @FXML
     private void initialize() {
         email.requestFocus();
+        Vistas.mostrarError(avisoConexion, s.avisoConexion);
+        baseDatos.setText("Datos en: " + co.secopradar.modelo.dao.BaseDatos.descripcion());
     }
 
     @FXML

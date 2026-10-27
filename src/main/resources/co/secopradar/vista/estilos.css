@@ -259,3 +259,18 @@
 .subtitulo-documento { -fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: -tinta; -fx-padding: 12 0 0 0; }
 .parrafo, .vineta { -fx-font-size: 13px; -fx-line-spacing: 2; }
 .vineta { -fx-padding: 0 0 0 12; }
+
+/* ---- Fuerza de la contraseña ---- */
+.regla-ok { -fx-text-fill: -abierto; }
+.regla-falta { -fx-text-fill: #8a94a6; }
+.barra-fuerza { -fx-pref-height: 8; }
+.barra-fuerza > .track { -fx-background-color: -borde; -fx-background-radius: 99; }
+.barra-fuerza > .bar { -fx-background-radius: 99; -fx-background-insets: 0; -fx-background-color: #9aa3b5; }
+.barra-fuerza.fuerza-muy-debil > .bar { -fx-background-color: -peligro; }
+.barra-fuerza.fuerza-debil > .bar { -fx-background-color: -urgente; }
+.barra-fuerza.fuerza-media > .bar { -fx-background-color: #2b8a3e; }
+.barra-fuerza.fuerza-fuerte > .bar { -fx-background-color: -abierto; }
+.label.fuerza-muy-debil { -fx-text-fill: -peligro; }
+.label.fuerza-debil { -fx-text-fill: -urgente; }
+.label.fuerza-media, .label.fuerza-fuerte { -fx-text-fill: -abierto; -fx-font-weight: bold; }
+.punto-estado.sin-nube { -fx-background-color: -urgente; }

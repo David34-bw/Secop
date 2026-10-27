@@ -6,8 +6,10 @@
 <?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
@@ -40,16 +42,22 @@
             <Label styleClass="subtitulo" text="Datos"/>
             <Label fx:id="datos" styleClass="texto-chico" wrapText="true"/>
             <HBox spacing="8" maxWidth="560">
-                <TextField fx:id="nombre" promptText="Tu nombre" HBox.hgrow="ALWAYS"/>
+                <TextField fx:id="nombre" promptText="Tu nombre completo" HBox.hgrow="ALWAYS"/>
                 <Button text="Guardar nombre" styleClass="boton-borde" onAction="#guardarNombre"/>
             </HBox>
+            <Label fx:id="errorNombre" styleClass="error-campo" wrapText="true"/>
         </VBox>
 
         <VBox styleClass="caja" spacing="8" maxWidth="Infinity">
             <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
             <Label styleClass="subtitulo" text="Cambiar contraseña"/>
             <PasswordField fx:id="actual" promptText="Contraseña actual" maxWidth="360"/>
-            <PasswordField fx:id="nueva" promptText="Contraseña nueva (mínimo 8)" maxWidth="360"/>
+            <PasswordField fx:id="nueva" promptText="Contraseña nueva" maxWidth="360"/>
+            <HBox spacing="8" alignment="CENTER_LEFT" maxWidth="460">
+                <ProgressBar fx:id="barraFuerza" progress="0" maxWidth="Infinity" HBox.hgrow="ALWAYS" styleClass="barra-fuerza"/>
+                <Label fx:id="nivelFuerza" styleClass="texto-chico" minWidth="80"/>
+            </HBox>
+            <FlowPane fx:id="reglasPassword" hgap="12" vgap="1" prefWrapLength="460" maxWidth="480"/>
             <Button text="Cambiar contraseña" styleClass="boton-borde" onAction="#cambiarPassword"/>
         </VBox>
 

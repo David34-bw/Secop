@@ -34,11 +34,31 @@
             <version>${javafx.version}</version>
         </dependency>
 
-        <!-- Modelo: base de datos local en archivo -->
+        <!-- Modelo: base de datos local en archivo (respaldo si no hay conexión a Supabase) -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <version>${h2.version}</version>
+        </dependency>
+
+        <!-- Base de datos en la nube: PostgreSQL de Supabase -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.7.5</version>
+        </dependency>
+
+        <!-- Pool de conexiones: reutiliza conexiones (abrir una a Supabase tarda ~0,5 s) -->
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>5.1.0</version>
+        </dependency>
+        <!-- Los mensajes de HikariCP van a la misma consola (java.util.logging) -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jdk14</artifactId>
+            <version>2.0.17</version>
         </dependency>
 
         <!-- Lectura del JSON de datos.gov.co y de los catálogos -->

@@ -48,8 +48,11 @@ public class PrincipalControlador {
 
     private void pintarEstado(String mensaje) {
         boolean corriendo = s.actualizacion.estaCorriendo();
-        estado.setText(corriendo ? mensaje : mensaje + "  ·  " + s.procesos.contar() + " procesos en la base");
+        String base = co.secopradar.modelo.dao.BaseDatos.esPostgres() ? "Supabase" : "base local";
+        estado.setText(corriendo ? mensaje : mensaje + "  ·  " + s.procesos.contar() + " procesos en " + base
+                + (s.avisoConexion != null ? "  ·  ⚠ " + s.avisoConexion : ""));
         Vistas.clase(indicador, "corriendo", corriendo);
+        Vistas.clase(indicador, "sin-nube", !corriendo && s.avisoConexion != null);
     }
 
     private Usuario usuario() {

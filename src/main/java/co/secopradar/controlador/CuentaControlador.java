@@ -5,12 +5,15 @@ import co.secopradar.modelo.Sesion;
 import co.secopradar.modelo.Usuario;
 import co.secopradar.modelo.servicio.CuentaService;
 import co.secopradar.modelo.servicio.Servicios;
+import co.secopradar.modelo.servicio.ValidadorPassword;
 import co.secopradar.modelo.util.Formato;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 
 /** Controlador de cuenta.fxml: plan, avisos, nombre y contraseña. */
@@ -25,6 +28,10 @@ public class CuentaControlador {
     @FXML private TextField nombre;
     @FXML private PasswordField actual;
     @FXML private PasswordField nueva;
+    @FXML private Label errorNombre;
+    @FXML private ProgressBar barraFuerza;
+    @FXML private Label nivelFuerza;
+    @FXML private FlowPane reglasPassword;
 
     private final Servicios s = Servicios.get();
     private Usuario usuario;
@@ -33,7 +40,20 @@ public class CuentaControlador {
     private void initialize() {
         Vistas.ocultar(mensaje);
         Vistas.ocultar(error);
+        Vistas.ocultar(errorNombre);
         pintar();
+        nombre.textProperty().addListener((o, a, b) -> {
+            Vistas.ocultar(errorNombre);
+            Vistas.clase(nombre, "campo-error", false);
+        });
+        nueva.textProperty().addListener((o, a, b) -> pintarFuerza());
+        pintarFuerza();
+    }
+
+    private ValidadorPassword.Resultado pintarFuerza() {
+        ValidadorPassword.Resultado r = ValidadorPassword.evaluar(nueva.getText(), usuario.email(), usuario.nombre());
+        Vistas.pintarFuerza(r, reglasPassword, barraFuerza, nivelFuerza, nueva.getText().isEmpty());
+        return r;
     }
 
     private void pintar() {
@@ -71,10 +91,14 @@ public class CuentaControlador {
 
     @FXML
     private void guardarNombre() {
-        String limpio = nombre.getText().trim();
-        s.usuarios.cambiarNombre(usuario.id(), limpio.isEmpty() ? null : limpio.substring(0, Math.min(200, limpio.length())));
-        exito("Nombre actualizado.");
-        pintar();
+        try {
+            String guardado = s.cuentas.cambiarNombre(usuario, nombre.getText());
+            exito("Nombre actualizado: " + guardado + ".");
+            pintar();
+        } catch (CuentaService.ErrorCuenta e) {
+            Vistas.mostrarError(errorNombre, e.getMessage());
+            Vistas.clase(nombre, "campo-error", true);
+        }
     }
 
     @FXML
@@ -83,6 +107,7 @@ public class CuentaControlador {
             s.cuentas.cambiarPassword(usuario, actual.getText(), nueva.getText());
             actual.clear();
             nueva.clear();
+            pintarFuerza();
             exito("Contraseña actualizada.");
         } catch (CuentaService.ErrorCuenta e) {
             Vistas.ocultar(mensaje);

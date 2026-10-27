@@ -4,13 +4,17 @@ import co.secopradar.modelo.Sesion;
 import co.secopradar.modelo.Usuario;
 import co.secopradar.modelo.servicio.CuentaService;
 import co.secopradar.modelo.servicio.Servicios;
+import co.secopradar.modelo.servicio.ValidadorNombre;
+import co.secopradar.modelo.servicio.ValidadorPassword;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.FlowPane;
 
 /**
  * Controlador de registro.fxml. El correo se valida al salir del campo:
@@ -25,12 +29,26 @@ public class RegistroControlador {
     @FXML private CheckBox acepto;
     @FXML private Label error;
     @FXML private Label errorEmail;
+    @FXML private Label errorNombre;
+    @FXML private ProgressBar barraFuerza;
+    @FXML private Label nivelFuerza;
+    @FXML private FlowPane reglasPassword;
     @FXML private Button botonCrear;
 
     private final Servicios s = Servicios.get();
 
     @FXML
     private void initialize() {
+        // Nombre: se revisa al salir del campo y se quita el error al corregirlo.
+        nombre.focusedProperty().addListener((obs, antes, ahora) -> {
+            if (!ahora && !nombre.getText().isBlank()) revisarNombre();
+        });
+        nombre.textProperty().addListener((obs, a, b) -> marcarNombre(null));
+        // Contraseña: las reglas se actualizan con cada tecla.
+        password.textProperty().addListener((obs, a, b) -> pintarFuerza());
+        email.textProperty().addListener((obs, a, b) -> pintarFuerza());
+        pintarFuerza();
+
         email.focusedProperty().addListener((obs, antes, ahora) -> {
             if (!ahora && !email.getText().isBlank()) revisarCorreo(() -> { }, () -> { });
         });
@@ -69,6 +87,23 @@ public class RegistroControlador {
         t.start();
     }
 
+    private boolean revisarNombre() {
+        String mensaje = ValidadorNombre.validar(nombre.getText());
+        marcarNombre(mensaje);
+        return mensaje == null;
+    }
+
+    private void marcarNombre(String mensaje) {
+        Vistas.mostrarError(errorNombre, mensaje);
+        Vistas.clase(nombre, "campo-error", mensaje != null);
+    }
+
+    private ValidadorPassword.Resultado pintarFuerza() {
+        ValidadorPassword.Resultado r = ValidadorPassword.evaluar(password.getText(), email.getText(), nombre.getText());
+        Vistas.pintarFuerza(r, reglasPassword, barraFuerza, nivelFuerza, password.getText().isEmpty());
+        return r;
+    }
+
     private void marcarCorreo(String mensaje) {
         Vistas.mostrarError(errorEmail, mensaje);
         Vistas.clase(email, "campo-error", mensaje != null);
@@ -77,8 +112,14 @@ public class RegistroControlador {
     @FXML
     private void crear() {
         Vistas.ocultar(error);
-        if (password.getText().length() < 8) {
-            Vistas.mostrarError(error, "La contraseña debe tener al menos 8 caracteres");
+        if (!revisarNombre()) {
+            nombre.requestFocus();
+            return;
+        }
+        ValidadorPassword.Resultado clave = pintarFuerza();
+        if (!clave.valida()) {
+            Vistas.mostrarError(error, "La contraseña no es segura todavía: falta «" + clave.primerError().toLowerCase() + "».");
+            password.requestFocus();
             return;
         }
         if (!acepto.isSelected()) {

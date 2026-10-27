@@ -143,16 +143,19 @@ public class CuentaService {
         if (email.isEmpty() || password == null || password.isEmpty()) {
             throw new ErrorCuenta("Correo y contraseña son obligatorios");
         }
+        String errorNombre = ValidadorNombre.validar(nombre);
+        if (errorNombre != null) throw new ErrorCuenta(errorNombre);
+        String error = validarCorreo(email);
+        if (error != null) throw new ErrorCuenta(error);
+        ValidadorPassword.Resultado clave = ValidadorPassword.evaluar(password, email, nombre);
+        if (!clave.valida()) throw new ErrorCuenta("La contraseña no es segura: " + clave.primerError().toLowerCase());
         if (!acepto) {
             throw new ErrorCuenta("Debes aceptar los Términos y condiciones y la Política de tratamiento de datos personales");
         }
-        if (password.length() < 8) throw new ErrorCuenta("La contraseña debe tener al menos 8 caracteres");
-        String error = validarCorreo(email);
-        if (error != null) throw new ErrorCuenta(error);
         if (usuarios.porEmail(email).isPresent()) throw new ErrorCuenta("Ya existe una cuenta con ese correo");
 
         String rol = usuarios.contar() == 0 ? "admin" : "usuario";
-        String nombreLimpio = nombre == null || nombre.isBlank() ? null : nombre.trim();
+        String nombreLimpio = ValidadorNombre.formatear(nombre);
         int id = usuarios.crear(email, BCrypt.hashpw(password, BCrypt.gensalt(10)), nombreLimpio, rol,
                 OffsetDateTime.now().plusDays(Plan.DIAS_PRUEBA), VERSION_TERMINOS, VERSION_PRIVACIDAD);
         return usuarios.porId(id).orElseThrow();
@@ -167,7 +170,18 @@ public class CuentaService {
 
     public void cambiarPassword(Usuario u, String actual, String nueva) {
         if (autenticar(u.email(), actual).isEmpty()) throw new ErrorCuenta("La contraseña actual no es correcta");
-        if (nueva == null || nueva.length() < 8) throw new ErrorCuenta("La contraseña nueva debe tener al menos 8 caracteres");
+        ValidadorPassword.Resultado clave = ValidadorPassword.evaluar(nueva, u.email(), u.nombre());
+        if (!clave.valida()) throw new ErrorCuenta("La contraseña nueva no es segura: " + clave.primerError().toLowerCase());
+        if (nueva.equals(actual)) throw new ErrorCuenta("La contraseña nueva debe ser distinta de la actual");
         usuarios.cambiarPassword(u.id(), BCrypt.hashpw(nueva, BCrypt.gensalt(10)));
+    }
+
+    /** Cambia el nombre si es válido; lo guarda con mayúsculas iniciales. */
+    public String cambiarNombre(Usuario u, String nombre) {
+        String error = ValidadorNombre.validar(nombre);
+        if (error != null) throw new ErrorCuenta(error);
+        String formateado = ValidadorNombre.formatear(nombre);
+        usuarios.cambiarNombre(u.id(), formateado);
+        return formateado;
     }
 }
