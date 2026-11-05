@@ -1,6 +1,7 @@
 package co.secopradar.controlador;
 
 import co.secopradar.modelo.Oportunidad;
+import co.secopradar.modelo.Preparacion;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Hyperlink;
@@ -22,15 +23,32 @@ public class TarjetaOportunidadControlador {
     @FXML private Label modalidad;
     @FXML private Label cierre;
     @FXML private Label perfil;
+    @FXML private Label documentos;
     @FXML private Hyperlink enlace;
 
     private String url;
 
-    /** Crea una tarjeta lista para agregar a la lista. */
-    public static Parent crear(Oportunidad o, boolean mostrarPerfil) {
+    /**
+     * Crea una tarjeta lista para agregar a la lista. preparacion (puede ser
+     * null): los documentos del usuario, para decirle si le falta algo para
+     * la modalidad de este proceso.
+     */
+    public static Parent crear(Oportunidad o, boolean mostrarPerfil, Preparacion preparacion) {
         Navegador.Vista<TarjetaOportunidadControlador> v = Navegador.cargar("tarjetaOportunidad.fxml");
         v.controlador().mostrar(o, mostrarPerfil);
+        v.controlador().mostrarDocumentos(o, preparacion);
         return v.raiz();
+    }
+
+    private void mostrarDocumentos(Oportunidad o, Preparacion preparacion) {
+        var estado = preparacion == null || o.avisoTemprano() ? java.util.Optional.<Preparacion.Estado>empty()
+                : preparacion.paraModalidad(o.proceso().modalidad());
+        Vistas.mostrar(documentos, estado.isPresent());
+        estado.ifPresent(e -> {
+            documentos.setText(e.listo() ? "✓ Tienes los documentos básicos para esta modalidad"
+                    : "Para presentarte te falta: " + String.join(", ", e.faltantes()));
+            documentos.getStyleClass().add(e.listo() ? "preparacion-lista" : "preparacion-falta");
+        });
     }
 
     public void mostrar(Oportunidad o, boolean mostrarPerfil) {

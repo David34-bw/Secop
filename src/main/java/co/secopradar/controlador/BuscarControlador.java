@@ -95,7 +95,8 @@ public class BuscarControlador {
         mostrarResultado(n == 0 ? "No encontramos procesos vigentes con esa búsqueda. Prueba con otras palabras."
                 : n + (n == 1 ? " proceso vigente" : " procesos vigentes") + ". Estos son los "
                 + r.oportunidades().size() + " más relevantes:");
-        for (Oportunidad o : r.oportunidades()) lista.getChildren().add(TarjetaOportunidadControlador.crear(o, false));
+        var preparacion = Servicios.get().documentos.preparacion(co.secopradar.modelo.Sesion.usuarioId());
+        for (Oportunidad o : r.oportunidades()) lista.getChildren().add(TarjetaOportunidadControlador.crear(o, false, preparacion));
     }
 
     private void mostrarResultado(String mensaje) {

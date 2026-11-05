@@ -96,6 +96,7 @@ src/main/resources/
 | Inicio | Procesos abiertos hoy, nuevos, por región y tipo de contrato |
 | Oportunidades | Coincidencias de tus perfiles con filtros (texto, entidad, región, departamento, modalidad, cierre, valor) y orden; avisa de las nuevas desde tu última visita |
 | Mis búsquedas / Nuevo perfil | Perfiles con campos obligatorios, opción «Todos» y «Otro» para escribir; vista previa de cuántos procesos coinciden |
+| Mis documentos | Lo que pide SECOP II para presentarse (guía para persona natural): datos del proponente (documento, teléfono, profesión, matrícula COPNIA, RUP, SIGEP...) y subida de archivos (cédula, inhabilidades, seguridad social, antecedentes, RUT, certificación bancaria, RUP, SIGEP, título, tarjeta profesional, experiencia, certificaciones). PDF/JPG/PNG de hasta 5 MB, guardados en la base (tabla `documentos`), con fecha de vencimiento y aviso 15 días antes. Muestra para qué modalidades estás listo y qué te falta; las tarjetas de Oportunidades y Buscar también lo dicen |
 | Buscar | Búsqueda libre (`"frase"`, `OR`, `-excluir`) o por profesión |
 | Planes / Mi cuenta | Plan y límites, avisos, nombre y contraseña |
 | Administración | Estadísticas, descargar de SECOP ahora, historial, cambiar plan y rol de usuarios |

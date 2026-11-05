@@ -224,7 +224,8 @@ public class OportunidadesControlador {
         }
 
         lista.getChildren().clear();
-        for (Oportunidad o : panel.oportunidades()) lista.getChildren().add(TarjetaOportunidadControlador.crear(o, true));
+        var preparacion = Servicios.get().documentos.preparacion(co.secopradar.modelo.Sesion.usuarioId());
+        for (Oportunidad o : panel.oportunidades()) lista.getChildren().add(TarjetaOportunidadControlador.crear(o, true, preparacion));
         Vistas.mostrar(cargarMas, panel.hayMas());
     }
 

@@ -2,8 +2,10 @@ package co.secopradar.modelo.servicio;
 
 import co.secopradar.modelo.dao.BaseDatos;
 import co.secopradar.modelo.dao.CoincidenciaDAO;
+import co.secopradar.modelo.dao.DocumentoDAO;
 import co.secopradar.modelo.dao.LogDAO;
 import co.secopradar.modelo.dao.PerfilDAO;
+import co.secopradar.modelo.dao.ProponenteDAO;
 import co.secopradar.modelo.dao.ProcesoDAO;
 import co.secopradar.modelo.dao.UsuarioDAO;
 import co.secopradar.modelo.util.Registro;
@@ -36,6 +38,8 @@ public final class Servicios {
     public final ProcesoDAO procesos = new ProcesoDAO();
     public final CoincidenciaDAO coincidencias = new CoincidenciaDAO();
     public final LogDAO logs = new LogDAO();
+    public final ProponenteDAO proponentes = new ProponenteDAO();
+    public final DocumentoDAO archivos = new DocumentoDAO();
 
     public final CuentaService cuentas;
     public final PlanesService planes;
@@ -46,6 +50,7 @@ public final class Servicios {
     public final BusquedaService busqueda;
     public final PortadaService portada;
     public final LegalService legal;
+    public final DocumentosService documentos;
     public final LimiteIntentos limiteIntentos = new LimiteIntentos();
     public final CronService actualizacion;
 
@@ -61,6 +66,7 @@ public final class Servicios {
         oportunidades = new OportunidadesService(coincidencias);
         busqueda = new BusquedaService(procesos);
         portada = new PortadaService(procesos);
+        documentos = new DocumentosService(proponentes, archivos);
         legal = new LegalService(config.getProperty("correo-contacto", "contacto@secop-radar.local"));
         actualizacion = new CronService(ingesta, cruce, planes, portada, procesos,
                 entero("ingesta.dias-atras", 5), entero("actualizacion.hora", 21));

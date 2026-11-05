@@ -26,6 +26,7 @@
         <Label fx:id="modalidad" styleClass="dato" wrapText="true"/>
         <Label fx:id="cierre" styleClass="dato"/>
     </FlowPane>
+    <Label fx:id="documentos" wrapText="true"/>
     <HBox spacing="14" alignment="CENTER_LEFT">
         <Hyperlink fx:id="enlace" text="Ver en SECOP" onAction="#abrirEnSecop"/>
         <Region HBox.hgrow="ALWAYS"/>

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane fx:id="desplazable" fitToWidth="true" styleClass="desplazable" xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="co.secopradar.controlador.DocumentosControlador">
+    <VBox styleClass="pagina" spacing="14">
+        <padding><Insets top="26" right="32" bottom="32" left="32"/></padding>
+        <Label styleClass="titulo-pagina" text="Mis documentos"/>
+        <Label wrapText="true" maxWidth="760"
+               text="Ten listo lo que pide SECOP II para presentarte a un proceso. Llena tus datos y sube tus documentos: quedan guardados en tu cuenta y los puedes abrir desde cualquier computador."/>
+        <Label styleClass="aviso-info" wrapText="true" maxWidth="Infinity"
+               text="Es una guía general para persona natural. Lo exacto de cada proceso está en su invitación o pliego de condiciones: léelo completo antes de ofertar."/>
+        <Label fx:id="mensaje" styleClass="aviso-exito" wrapText="true" maxWidth="Infinity"/>
+        <Label fx:id="error" styleClass="aviso-error" wrapText="true" maxWidth="Infinity"/>
+
+        <!-- Resumen: para qué modalidades está listo -->
+        <VBox styleClass="caja" spacing="10">
+            <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+            <Label styleClass="subtitulo" text="¿Para qué procesos estás listo?"/>
+            <HBox spacing="10" alignment="CENTER_LEFT" maxWidth="560">
+                <ProgressBar fx:id="barraBasicos" progress="0" maxWidth="Infinity" HBox.hgrow="ALWAYS" styleClass="barra-avance"/>
+                <Label fx:id="textoBasicos" styleClass="texto-chico" minWidth="220"/>
+            </HBox>
+            <HBox spacing="10" alignment="CENTER_LEFT" maxWidth="560">
+                <ProgressBar fx:id="barraDatos" progress="0" maxWidth="Infinity" HBox.hgrow="ALWAYS" styleClass="barra-avance"/>
+                <Label fx:id="textoDatos" styleClass="texto-chico" minWidth="220"/>
+            </HBox>
+            <VBox fx:id="modalidades" spacing="6"/>
+        </VBox>
+
+        <!-- Datos del proponente -->
+        <VBox styleClass="caja" spacing="10">
+            <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+            <Label styleClass="subtitulo" text="Mis datos como proponente"/>
+            <Label styleClass="texto-chico" wrapText="true"
+                   text="Todo es opcional. Sirve para tener a la mano lo que te preguntan al registrarte y al ofertar."/>
+            <GridPane hgap="18" vgap="8">
+                <columnConstraints>
+                    <ColumnConstraints percentWidth="50"/>
+                    <ColumnConstraints percentWidth="50"/>
+                </columnConstraints>
+
+                <VBox spacing="4" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                    <Label styleClass="etiqueta" text="Tipo de persona"/>
+                    <ComboBox fx:id="tipoPersona" maxWidth="Infinity"/>
+                </VBox>
+                <VBox spacing="4" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                    <Label styleClass="etiqueta" text="Tipo de documento"/>
+                    <ComboBox fx:id="tipoDocumento" maxWidth="Infinity"/>
+                </VBox>
+
+                <VBox spacing="4" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                    <Label styleClass="etiqueta" text="Número de documento"/>
+                    <TextField fx:id="numeroDocumento" promptText="Sin puntos, ej: 1012345678"/>
+                    <Label fx:id="errorNumeroDocumento" styleClass="error-campo" wrapText="true"/>
+                </VBox>
+                <VBox spacing="4" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                    <Label styleClass="etiqueta" text="Teléfono"/>
+                    <TextField fx:id="telefono" promptText="Celular, ej: 3001234567"/>
+                    <Label fx:id="errorTelefono" styleClass="error-campo" wrapText="true"/>
+                </VBox>
+
+                <VBox spacing="4" GridPane.columnIndex="0" GridPane.rowIndex="2">
+                    <Label styleClass="etiqueta" text="Departamento"/>
+                    <ComboBox fx:id="departamento" promptText="Elige..." maxWidth="Infinity"/>
+                </VBox>
+                <VBox spacing="4" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                    <Label styleClass="etiqueta" text="Ciudad o municipio"/>
+                    <TextField fx:id="ciudad" promptText="Ej: Medellín"/>
+                    <Label fx:id="errorCiudad" styleClass="error-campo" wrapText="true"/>
+                </VBox>
+
+                <VBox spacing="4" GridPane.columnIndex="0" GridPane.rowIndex="3">
+                    <Label styleClass="etiqueta" text="Profesión u oficio"/>
+                    <ComboBox fx:id="profesion" editable="true" promptText="Elige o escribe..." maxWidth="Infinity"/>
+                    <Label fx:id="errorProfesion" styleClass="error-campo" wrapText="true"/>
+                </VBox>
+                <VBox spacing="4" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                    <Label styleClass="etiqueta" text="Años de experiencia"/>
+                    <TextField fx:id="aniosExperiencia" promptText="Ej: 3"/>
+                    <Label fx:id="errorAniosExperiencia" styleClass="error-campo" wrapText="true"/>
+                </VBox>
+
+                <VBox spacing="4" GridPane.columnIndex="0" GridPane.rowIndex="4">
+                    <Label styleClass="etiqueta" text="Título profesional"/>
+                    <TextField fx:id="titulo" promptText="Ej: Ingeniero de sistemas"/>
+                    <Label fx:id="errorTitulo" styleClass="error-campo" wrapText="true"/>
+                </VBox>
+                <VBox spacing="4" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                    <Label styleClass="etiqueta" text="Universidad o institución"/>
+                    <TextField fx:id="universidad" promptText="Ej: Universidad Nacional de Colombia"/>
+                    <Label fx:id="errorUniversidad" styleClass="error-campo" wrapText="true"/>
+                </VBox>
+
+                <VBox spacing="4" GridPane.columnIndex="0" GridPane.rowIndex="5">
+                    <Label styleClass="etiqueta" text="Matrícula o tarjeta profesional"/>
+                    <TextField fx:id="matriculaProfesional" promptText="Ej: 25202-123456 (COPNIA)"/>
+                    <Label fx:id="errorMatriculaProfesional" styleClass="error-campo" wrapText="true"/>
+                </VBox>
+                <VBox spacing="4" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                    <CheckBox fx:id="tieneRup" text="Estoy inscrito en el RUP">
+                        <VBox.margin><Insets top="8"/></VBox.margin>
+                    </CheckBox>
+                    <TextField fx:id="numeroRup" promptText="Número de inscripción del RUP"/>
+                    <Label fx:id="errorNumeroRup" styleClass="error-campo" wrapText="true"/>
+                </VBox>
+            </GridPane>
+
+            <CheckBox fx:id="registradoSecop" text="Ya tengo cuenta de proveedor en SECOP II"/>
+            <CheckBox fx:id="sigepActualizada" text="Mi hoja de vida en SIGEP II está actualizada"/>
+
+            <Label styleClass="etiqueta" text="Perfil profesional"/>
+            <TextArea fx:id="resumen" wrapText="true" prefRowCount="3"
+                      promptText="Un resumen corto de lo que haces y tu experiencia, para copiarlo en la oferta o en SIGEP."/>
+            <Label fx:id="errorResumen" styleClass="error-campo" wrapText="true"/>
+            <Button text="Guardar datos" styleClass="boton-azul" onAction="#guardarDatos"/>
+        </VBox>
+
+        <!-- Documentos, por grupos (se arman en el controlador) -->
+        <VBox fx:id="secciones" spacing="14"/>
+
+        <!-- Pasos de la guía -->
+        <VBox styleClass="caja" spacing="6">
+            <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+            <Label styleClass="subtitulo" text="Pasos para presentarte a un proceso"/>
+            <VBox fx:id="pasos" spacing="4"/>
+        </VBox>
+    </VBox>
+</ScrollPane>

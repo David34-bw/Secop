@@ -24,6 +24,7 @@ public class PrincipalControlador {
     @FXML private Button botonInicio;
     @FXML private Button botonOportunidades;
     @FXML private Button botonPerfiles;
+    @FXML private Button botonDocumentos;
     @FXML private Button botonBuscar;
     @FXML private Button botonPlanes;
     @FXML private Button botonCuenta;
@@ -38,8 +39,8 @@ public class PrincipalControlador {
         email.setText(u.email());
         Vistas.mostrar(botonAdmin, u.esAdmin());
         botones = Map.of(Pantalla.INICIO, botonInicio, Pantalla.OPORTUNIDADES, botonOportunidades,
-                Pantalla.PERFILES, botonPerfiles, Pantalla.NUEVO_PERFIL, botonPerfiles, Pantalla.BUSCAR, botonBuscar,
-                Pantalla.PLANES, botonPlanes, Pantalla.CUENTA, botonCuenta, Pantalla.ADMIN, botonAdmin);
+                Pantalla.PERFILES, botonPerfiles, Pantalla.NUEVO_PERFIL, botonPerfiles, Pantalla.DOCUMENTOS, botonDocumentos,
+                Pantalla.BUSCAR, botonBuscar, Pantalla.PLANES, botonPlanes, Pantalla.CUENTA, botonCuenta, Pantalla.ADMIN, botonAdmin);
 
         // El modelo avisa desde su hilo; la vista se actualiza en el hilo de JavaFX.
         pintarEstado(s.actualizacion.ultimoResultado());
@@ -76,6 +77,8 @@ public class PrincipalControlador {
     @FXML private void irAOportunidades() { mostrar(Pantalla.OPORTUNIDADES); }
 
     @FXML private void irAPerfiles() { mostrar(Pantalla.PERFILES); }
+
+    @FXML private void irADocumentos() { mostrar(Pantalla.DOCUMENTOS); }
 
     @FXML private void irABuscar() { mostrar(Pantalla.BUSCAR); }
 
