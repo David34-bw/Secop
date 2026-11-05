@@ -5,15 +5,16 @@ Versión de escritorio en **Java 21 + JavaFX (FXML)** del proyecto
 Descarga los procesos de contratación de **SECOP II** desde datos.gov.co, los cruza con los perfiles de búsqueda
 de cada usuario y muestra las oportunidades ordenadas por puntaje.
 
-Todo corre **dentro de la aplicación**: no hay navegador ni servidor web. Los datos se guardan en
-**Supabase** (PostgreSQL en la nube). Si no hay contraseña configurada o no hay internet, la app usa una base
-local H2 (`./data/secop.mv.db`) y lo avisa.
+La aplicación es de escritorio: no hay que abrir ningún navegador. Los datos se guardan en **Supabase**.
+Por defecto (`bd.modo=api`) la app llega a ellos **por HTTPS** con la Edge Function `api`, así que funciona
+en cualquier computador (también en redes con permisos limitados, como la de la universidad) sin configurar
+nada: solo `git clone` y ejecutar. Si no hay internet, usa una base local H2 (`./data/secop.mv.db`) y lo avisa.
 
 ---
 
-## Conectar a Supabase (una sola vez)
+## Modo JDBC: conectar directo a PostgreSQL (opcional)
 
-La contraseña de la base **no está en el código** (no se sube a GitHub):
+Solo hace falta si cambias a `bd.modo=jdbc`. La contraseña de la base **no está en el código** (no se sube a GitHub):
 
 1. Copia `config.local.properties.ejemplo` como **`config.local.properties`** (en la carpeta del proyecto,
    junto al `pom.xml`).
@@ -25,25 +26,28 @@ Las tablas están en el esquema **`secop`** del proyecto (no en `public`), con R
 con las claves públicas de Supabase, solo desde la app. La primera vez que la app abre con la base vacía
 descarga los procesos de SECOP II de los últimos 7 días.
 
-### Modo API por HTTPS (redes que bloquean PostgreSQL)
+### Modo API por HTTPS (el que está activo)
 
-En algunas redes (por ejemplo, la universidad) el firewall corta el puerto 5432 de PostgreSQL. Para eso
-existe `bd.modo=api` en `config.properties`: la app habla por HTTPS (puerto 443) con la Edge Function
-`api` de Supabase y **no necesita la contraseña de la base**, solo la clave *publishable*:
+En algunas redes (por ejemplo, la universidad) el firewall corta el puerto 5432 de PostgreSQL. Por eso
+`config.properties` tiene `bd.modo=api`: la app habla por HTTPS (puerto 443) con la Edge Function `api`
+de Supabase y **no necesita la contraseña de la base**, solo la clave *publishable*, que ya está en
+`config.properties` (es pública por diseño). En la pantalla de ingreso dice
+**"Datos en: Supabase por HTTPS (dfsrvpplxueujiezdogi.supabase.co)"**.
 
-La clave publishable ya está en `config.properties` (es pública por diseño). Para dejar todo listo en
-Supabase hay un script que se ejecuta una sola vez, desde un PC que sí llegue a PostgreSQL:
+- La actualización diaria de SECOP la hace el servidor a las 21:00 de Colombia (`pg_cron`), no cada computador.
+- Los documentos subidos se guardan en Supabase Storage (bucket privado `documentos`).
+- La sesión dura 7 días; después hay que volver a ingresar.
+- Si la API no responde, la app usa la base local y lo avisa.
+
+El servidor **ya está configurado**. Si alguna vez hay que repetirlo (por ejemplo, tras cambiar el código de
+`supabase/functions/api`), se ejecuta una vez desde un PC que sí llegue a PostgreSQL y tenga
+`config.local.properties` con la contraseña:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts\configurar-api.ps1
 ```
 
-Al terminar pone `bd.modo=api` en `config.properties`; con commit y push, cualquier computador (por ejemplo
-el de la universidad) solo necesita `git pull` y ejecutar la app.
-
-En modo API la actualización diaria de SECOP la hace el servidor (no cada computador) y los documentos
-se guardan en Supabase Storage. El código del servidor está en `supabase/` y la guía de despliegue en
-`docs/api-https/`. Si la API no responde, la app usa la base local y lo avisa.
+El código del servidor está en `supabase/` y la guía completa en `docs/api-https/`.
 
 ## Cómo correrlo en IntelliJ IDEA
 
@@ -64,7 +68,7 @@ Desde la terminal también funciona:
 mvnw.cmd javafx:run
 ```
 
-Tests (36, la mayoría portados de los tests originales):
+Tests (77: reglas portadas de la web original, ocultar procesos con H2 y el modo API contra un servidor falso):
 
 ```bash
 mvnw.cmd test
@@ -79,29 +83,46 @@ src/main/java/co/secopradar/
 ├── Lanzador.java, App.java        ← arranque de JavaFX
 ├── modelo/                        ← MODELO: datos y reglas, sin nada de interfaz
 │   ├── Usuario, Perfil, Proceso, Plan, Oportunidad, Region, RangoValor, ...   (entidades)
-│   ├── BorradorPerfil, GrupoOpciones                                          (formulario de perfiles)
-│   ├── dao/        BaseDatos (JDBC + schema.sql), UsuarioDAO, PerfilDAO, ProcesoDAO, CoincidenciaDAO, LogDAO
-│   ├── servicio/   Servicios (arma todo), CuentaService, PerfilesService, IngestaService (datos.gov.co),
+│   ├── Proponente, Documento, TipoDocumento, Preparacion                      (Mis documentos)
+│   ├── Postulacion, Etapa, Avance                                             (Mis postulaciones)
+│   ├── repositorio/ interfaces de acceso a datos (UsuarioRepositorio, ProcesoRepositorio, ...)
+│   ├── dao/        modo JDBC: BaseDatos (JDBC + schema.sql), UsuarioDAO, PerfilDAO, ProcesoDAO,
+│   │               CoincidenciaDAO, LogDAO, ProponenteDAO, DocumentoDAO, PostulacionDAO, ProcesoOcultoDAO
+│   ├── api/        modo API: ClienteApi (HTTPS + JSON) y los repositorios que llaman a la función `api`
+│   ├── servicio/   Servicios (elige el modo y arma todo), CuentaService, PerfilesService, IngestaService,
 │   │               CoincidenciasService + Matching (puntaje), OportunidadesService, BusquedaService,
-│   │               PortadaService, PlanesService, CronService (actualización diaria), LegalService
+│   │               PortadaService, PlanesService, CronService, DocumentosService, PostulacionesService,
+│   │               LegalService; CuentaServiceApi y ServiciosApi (variantes del modo API)
 │   └── util/       Texto, TextoOracion, Formato, Registro
-└── controlador/                   ← CONTROLADOR: un controlador por vista FXML
-    ├── Navegador, Pantalla        (carga las vistas y cambia de pantalla)
-    ├── LoginControlador, RegistroControlador, PrincipalControlador
-    ├── InicioControlador, OportunidadesControlador, TarjetaOportunidadControlador
-    ├── PerfilesControlador, TarjetaPerfilControlador, NuevoPerfilControlador, GrupoOpcionesControlador
-    └── BuscarControlador, PlanesControlador, CuentaControlador, AdminControlador, LegalControlador
+├── controlador/                   ← CONTROLADOR: un controlador por vista FXML
+│   ├── Navegador, Pantalla, Vistas (carga las vistas y cambia de pantalla)
+│   ├── LoginControlador, RegistroControlador, PrincipalControlador
+│   ├── InicioControlador, OportunidadesControlador, TarjetaOportunidadControlador (con menú de clic derecho)
+│   ├── PerfilesControlador, TarjetaPerfilControlador, NuevoPerfilControlador, GrupoOpcionesControlador
+│   ├── DocumentosControlador, PostulacionesControlador, PostulacionControlador
+│   └── BuscarControlador, PlanesControlador, CuentaControlador, AdminControlador, LegalControlador
+└── herramientas/ConfigurarServidor ← solo para el script de configuración (no es parte de la app)
 
 src/main/resources/
 ├── co/secopradar/vista/           ← VISTA: archivos FXML + estilos.css + imágenes
 │   ├── login.fxml, registro.fxml, principal.fxml
 │   ├── inicio.fxml, oportunidades.fxml, tarjetaOportunidad.fxml
 │   ├── perfiles.fxml, tarjetaPerfil.fxml, nuevoPerfil.fxml, grupoOpciones.fxml
+│   ├── documentos.fxml, postulaciones.fxml, postulacion.fxml
 │   └── buscar.fxml, planes.fxml, cuenta.fxml, admin.fxml, legal.fxml
-├── config.properties              ← configuración (token de datos.gov.co, hora de actualización...)
-├── schema.sql                     ← tablas de la base
+├── config.properties              ← configuración (modo de datos, clave publishable, hora de actualización...)
+├── schema.sql                     ← tablas de la base (modo JDBC y H2)
 ├── datos/                         ← catálogos: profesiones y áreas UNSPSC
 └── legal/                         ← términos y política de datos
+
+supabase/                          ← servidor del modo API
+├── functions/api/                 ← Edge Function (TypeScript/Deno): una función con enrutador
+├── functions/_shared/dominio/     ← reglas (puntaje, planes, validaciones) iguales a las de Java, con pruebas
+├── migrations/                    ← tablas del esquema `secop`
+└── sql/programar-job.sql          ← actualización diaria con pg_cron
+
+scripts/configurar-api.ps1         ← configura todo el servidor (se ejecuta una vez)
+docs/api-https/                    ← diseño y guía de despliegue del modo API
 ```
 
 - Las vistas (`.fxml`) solo describen la pantalla; se pueden abrir y editar en **Scene Builder**.
@@ -114,10 +135,10 @@ src/main/resources/
 |---|---|
 | Ingresar / Crear cuenta | Nombre real (solo letras, con vocales, sin números, teclazos ni palabras de relleno), correo validado (formato, dominio mal escrito, temporal, que reciba correo) y contraseña segura (10+ caracteres, mayúscula, minúscula, número, símbolo, sin secuencias, sin repetir, no común, sin tu nombre o correo) con indicador de fuerza |
 | Inicio | Procesos abiertos hoy, nuevos, por región y tipo de contrato |
-| Oportunidades | Coincidencias de tus perfiles con filtros (texto, entidad, región, departamento, modalidad, cierre, valor) y orden; avisa de las nuevas desde tu última visita |
+| Oportunidades | Coincidencias de tus perfiles con filtros (texto, entidad, región, departamento, modalidad, cierre, valor) y orden; avisa de las nuevas desde tu última visita. Clic derecho en una tarjeta: abrir en SECOP, copiar enlace, ocultar o volver a mostrar (casilla «Mostrar ocultas»; tabla `procesos_ocultos`) |
 | Mis búsquedas / Nuevo perfil | Perfiles con campos obligatorios, opción «Todos» y «Otro» para escribir; vista previa de cuántos procesos coinciden |
 | Mis postulaciones | Botón «Postularme» en cada proceso abierto. Cada postulación avanza por las 7 etapas de la guía **en orden** (registro en SECOP II, revisar el proceso, leer el pliego, reunir documentos, propuesta económica, presentar la oferta, evaluación): una etapa se desbloquea al completar la anterior. La de documentos se completa sola con lo de Mis documentos más los requisitos propios del pliego; la oferta no puede pasar del presupuesto; no se marca presentada si ya cerró; resultado ganada, no ganada o subsanar (con plazo). Tabla `postulaciones` |
-| Mis documentos | Lo que pide SECOP II para presentarse (guía para persona natural): datos del proponente (documento, teléfono, profesión, matrícula COPNIA, RUP, SIGEP...) y subida de archivos (cédula, inhabilidades, seguridad social, antecedentes, RUT, certificación bancaria, RUP, SIGEP, título, tarjeta profesional, experiencia, certificaciones). PDF/JPG/PNG de hasta 5 MB, guardados en la base (tabla `documentos`), con fecha de vencimiento y aviso 15 días antes. Muestra para qué modalidades estás listo y qué te falta; las tarjetas de Oportunidades y Buscar también lo dicen |
+| Mis documentos | Lo que pide SECOP II para presentarse (guía para persona natural): datos del proponente (documento, teléfono, profesión, matrícula COPNIA, RUP, SIGEP...) y subida de archivos (cédula, inhabilidades, seguridad social, antecedentes, RUT, certificación bancaria, RUP, SIGEP, título, tarjeta profesional, experiencia, certificaciones). PDF/JPG/PNG de hasta 5 MB (en modo API van a Supabase Storage; en modo JDBC, a la tabla `documentos`), con fecha de vencimiento y aviso 15 días antes. Muestra para qué modalidades estás listo y qué te falta; las tarjetas de Oportunidades y Buscar también lo dicen |
 | Buscar | Búsqueda libre (`"frase"`, `OR`, `-excluir`) o por profesión |
 | Planes / Mi cuenta | Plan y límites, avisos, nombre y contraseña |
 | Administración | Estadísticas, descargar de SECOP ahora, historial, cambiar plan y rol de usuarios |
@@ -127,14 +148,15 @@ src/main/resources/
 - Los **correos de alerta** se reemplazaron por **avisos dentro de la app** (en Oportunidades).
 - **Pagos con Mercado Pago**, verificación de correo con código y login con Google no están incluidos;
   el administrador asigna los planes.
-- La actualización diaria corre mientras la app esté abierta (por defecto a las 21:00, en `config.properties`).
+- La actualización diaria la hace el servidor a las 21:00 de Colombia (en modo JDBC o H2 corre mientras la app
+  esté abierta, a la hora de `actualizacion.hora` en `config.properties`).
 
 ## Base de datos
 
-- **Supabase** (principal): `config.properties` tiene la conexión (Session pooler, esquema `secop`) y
-  `config.local.properties` la contraseña. También sirve la variable de entorno `SECOP_BD_PASSWORD`.
+- **Supabase por HTTPS** (`bd.modo=api`, el activo): no necesita contraseña; la Edge Function `api` es la
+  única que entra a la base.
+- **Supabase directo** (`bd.modo=jdbc`): `config.properties` tiene la conexión (Session pooler, esquema `secop`)
+  y `config.local.properties` la contraseña. También sirve la variable de entorno `SECOP_BD_PASSWORD`.
 - **H2 local** (respaldo): `./data/`. Para empezar de cero, cierra la app y borra la carpeta `data`.
 - La barra de abajo de la app dice cuál se está usando (punto naranja = base local).
-
-> ⚠️ El proyecto está dentro de OneDrive. Si OneDrive borra o deja "solo en línea" archivos del proyecto
-> (como pasó con `src/`), muévelo a una carpeta fuera de OneDrive, por ejemplo `C:\Proyectos\Secop`.
+- Nunca subas a GitHub `config.local.properties` ni `supabase/.temp/` (ya están en el `.gitignore`).

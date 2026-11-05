@@ -1,6 +1,10 @@
 # Acceso por HTTPS — Fase 5: guía de despliegue
 
-Esta guía la ejecutas tú, paso a paso. Nada de esto se ha hecho todavía en Supabase.
+> **Estado (2026-11-05):** ya está todo desplegado con `scripts/configurar-api.ps1` y verificado (función
+> `api` activa, migración aplicada, bucket `documentos`, job diario programado y primera actualización sin
+> errores). Esta guía sirve para repetirlo o para entender cada paso.
+
+Esta guía la ejecutas tú, paso a paso.
 Todos los comandos son para **PowerShell** (la terminal de IntelliJ o de Windows), desde la carpeta
 del proyecto (`C:\Users\david\Desktop\Secop`).
 
