@@ -89,6 +89,19 @@ public final class Preparacion {
         return vigentes.contains(t);
     }
 
+    public boolean registradoSecop() {
+        return registradoSecop;
+    }
+
+    /**
+     * Documentos (vigentes) que faltan para la modalidad de un proceso. Si
+     * la modalidad no está en la guía, solo los básicos.
+     */
+    public List<String> documentosFaltantes(String modalidad) {
+        List<TipoDocumento> requeridos = Grupo.de(modalidad).map(Grupo::requeridos).orElse(BASICOS);
+        return requeridos.stream().filter(t -> !vigentes.contains(t)).map(t -> t.nombre).toList();
+    }
+
     public Estado estado(Grupo g) {
         List<String> faltan = new ArrayList<>();
         if (!registradoSecop) faltan.add(REGISTRO_SECOP);

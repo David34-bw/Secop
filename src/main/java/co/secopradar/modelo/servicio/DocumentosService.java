@@ -129,6 +129,14 @@ public class DocumentosService {
         return t.isEmpty() ? null : t;
     }
 
+    /** Marca que ya tiene cuenta de proveedor en SECOP II (etapa 1 de una postulación). */
+    public void marcarRegistrado(int usuarioId) {
+        Proponente p = datos(usuarioId);
+        proponentes.guardar(usuarioId, new Proponente(p.tipoPersona(), p.tipoDocumento(), p.numeroDocumento(), p.telefono(),
+                p.departamento(), p.ciudad(), p.profesion(), p.titulo(), p.universidad(), p.matriculaProfesional(),
+                p.aniosExperiencia(), p.resumen(), true, p.tieneRup(), p.numeroRup(), p.sigepActualizada()));
+    }
+
     // ---- Archivos ----
 
     /**
@@ -138,17 +146,8 @@ public class DocumentosService {
      */
     public Documento subir(int usuarioId, TipoDocumento tipo, Path archivo, LocalDate vence) {
         String nombre = archivo.getFileName().toString();
-        String ext = nombre.contains(".") ? nombre.substring(nombre.lastIndexOf('.') + 1).toLowerCase(Locale.ROOT) : "";
-        if (!EXTENSIONES.contains(ext)) throw new ErrorArchivo("Solo se aceptan archivos PDF, JPG o PNG.");
-        byte[] datos;
-        try {
-            if (Files.size(archivo) > TAMANO_MAXIMO) throw new ErrorArchivo("El archivo pesa más de 5 MB. Comprímelo o escanéalo con menos resolución.");
-            datos = Files.readAllBytes(archivo);
-        } catch (IOException e) {
-            throw new ErrorArchivo("No se pudo leer el archivo: " + e.getMessage());
-        }
-        if (datos.length == 0) throw new ErrorArchivo("El archivo está vacío.");
-        if (!coincideFormato(ext, datos)) throw new ErrorArchivo("El archivo no es un " + ext.toUpperCase() + " válido.");
+        byte[] datos = leer(archivo);
+        String ext = extension(nombre);
         if (vence == null && tipo == TipoDocumento.SEGURIDAD_SOCIAL) vence = LocalDate.now().plusMonths(1);
         if (vence != null && !tipo.vence) vence = null;
         if (vence != null && vence.isBefore(LocalDate.now().minusYears(1))) {
@@ -159,6 +158,26 @@ public class DocumentosService {
         String mime = ext.equals("pdf") ? "application/pdf" : ext.equals("png") ? "image/png" : "image/jpeg";
         int id = documentos.crear(usuarioId, tipo, nombre, mime, datos, vence);
         return documentos.porId(id, usuarioId).orElseThrow();
+    }
+
+    private static String extension(String nombre) {
+        return nombre.contains(".") ? nombre.substring(nombre.lastIndexOf('.') + 1).toLowerCase(Locale.ROOT) : "";
+    }
+
+    /** Lee un PDF/JPG/PNG de hasta 5 MB y revisa que sea lo que dice ser. Lanza ErrorArchivo si no. */
+    public static byte[] leer(Path archivo) {
+        String ext = extension(archivo.getFileName().toString());
+        if (!EXTENSIONES.contains(ext)) throw new ErrorArchivo("Solo se aceptan archivos PDF, JPG o PNG.");
+        byte[] datos;
+        try {
+            if (Files.size(archivo) > TAMANO_MAXIMO) throw new ErrorArchivo("El archivo pesa más de 5 MB. Comprímelo o escanéalo con menos resolución.");
+            datos = Files.readAllBytes(archivo);
+        } catch (IOException e) {
+            throw new ErrorArchivo("No se pudo leer el archivo: " + e.getMessage());
+        }
+        if (datos.length == 0) throw new ErrorArchivo("El archivo está vacío.");
+        if (!coincideFormato(ext, datos)) throw new ErrorArchivo("El archivo no es un " + ext.toUpperCase() + " válido.");
+        return datos;
     }
 
     /** Revisa los primeros bytes para que un .pdf sea de verdad un PDF (y no un archivo renombrado). */

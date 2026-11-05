@@ -24,6 +24,7 @@ public class PrincipalControlador {
     @FXML private Button botonInicio;
     @FXML private Button botonOportunidades;
     @FXML private Button botonPerfiles;
+    @FXML private Button botonPostulaciones;
     @FXML private Button botonDocumentos;
     @FXML private Button botonBuscar;
     @FXML private Button botonPlanes;
@@ -38,9 +39,11 @@ public class PrincipalControlador {
         Usuario u = usuario();
         email.setText(u.email());
         Vistas.mostrar(botonAdmin, u.esAdmin());
-        botones = Map.of(Pantalla.INICIO, botonInicio, Pantalla.OPORTUNIDADES, botonOportunidades,
-                Pantalla.PERFILES, botonPerfiles, Pantalla.NUEVO_PERFIL, botonPerfiles, Pantalla.DOCUMENTOS, botonDocumentos,
-                Pantalla.BUSCAR, botonBuscar, Pantalla.PLANES, botonPlanes, Pantalla.CUENTA, botonCuenta, Pantalla.ADMIN, botonAdmin);
+        botones = Map.ofEntries(Map.entry(Pantalla.INICIO, botonInicio), Map.entry(Pantalla.OPORTUNIDADES, botonOportunidades),
+                Map.entry(Pantalla.PERFILES, botonPerfiles), Map.entry(Pantalla.NUEVO_PERFIL, botonPerfiles),
+                Map.entry(Pantalla.POSTULACIONES, botonPostulaciones), Map.entry(Pantalla.POSTULACION, botonPostulaciones),
+                Map.entry(Pantalla.DOCUMENTOS, botonDocumentos), Map.entry(Pantalla.BUSCAR, botonBuscar),
+                Map.entry(Pantalla.PLANES, botonPlanes), Map.entry(Pantalla.CUENTA, botonCuenta), Map.entry(Pantalla.ADMIN, botonAdmin));
 
         // El modelo avisa desde su hilo; la vista se actualiza en el hilo de JavaFX.
         pintarEstado(s.actualizacion.ultimoResultado());
@@ -77,6 +80,8 @@ public class PrincipalControlador {
     @FXML private void irAOportunidades() { mostrar(Pantalla.OPORTUNIDADES); }
 
     @FXML private void irAPerfiles() { mostrar(Pantalla.PERFILES); }
+
+    @FXML private void irAPostulaciones() { mostrar(Pantalla.POSTULACIONES); }
 
     @FXML private void irADocumentos() { mostrar(Pantalla.DOCUMENTOS); }
 

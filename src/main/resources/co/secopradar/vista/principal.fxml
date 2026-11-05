@@ -26,6 +26,7 @@
             <Button fx:id="botonInicio" text="Inicio" styleClass="boton-menu" maxWidth="Infinity" onAction="#irAInicio"/>
             <Button fx:id="botonOportunidades" text="Oportunidades" styleClass="boton-menu" maxWidth="Infinity" onAction="#irAOportunidades"/>
             <Button fx:id="botonPerfiles" text="Mis búsquedas" styleClass="boton-menu" maxWidth="Infinity" onAction="#irAPerfiles"/>
+            <Button fx:id="botonPostulaciones" text="Mis postulaciones" styleClass="boton-menu" maxWidth="Infinity" onAction="#irAPostulaciones"/>
             <Button fx:id="botonDocumentos" text="Mis documentos" styleClass="boton-menu" maxWidth="Infinity" onAction="#irADocumentos"/>
             <Button fx:id="botonBuscar" text="Buscar" styleClass="boton-menu" maxWidth="Infinity" onAction="#irABuscar"/>
             <Button fx:id="botonPlanes" text="Planes" styleClass="boton-menu" maxWidth="Infinity" onAction="#irAPlanes"/>

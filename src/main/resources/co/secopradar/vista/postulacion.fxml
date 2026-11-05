@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane fx:id="desplazable" fitToWidth="true" styleClass="desplazable" xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="co.secopradar.controlador.PostulacionControlador">
+    <VBox styleClass="pagina" spacing="12">
+        <padding><Insets top="22" right="32" bottom="32" left="32"/></padding>
+        <Hyperlink text="← Volver a Mis postulaciones" onAction="#volver"/>
+        <Label fx:id="entidad" styleClass="texto-chico" wrapText="true"/>
+        <Label fx:id="objeto" styleClass="subtitulo" wrapText="true"/>
+        <FlowPane hgap="16" vgap="4">
+            <Label fx:id="valor" styleClass="dato"/>
+            <Label fx:id="modalidad" styleClass="dato" wrapText="true"/>
+            <Label fx:id="cierre" styleClass="dato"/>
+            <Hyperlink fx:id="enlace" text="Ver en SECOP" onAction="#abrirEnSecop" styleClass="enlace-compacto"/>
+        </FlowPane>
+        <Label fx:id="mensaje" styleClass="aviso-exito" wrapText="true" maxWidth="Infinity"/>
+        <Label fx:id="estadoFinal" wrapText="true" maxWidth="Infinity"/>
+
+        <HBox spacing="10" alignment="CENTER_LEFT" maxWidth="640">
+            <ProgressBar fx:id="barra" progress="0" maxWidth="Infinity" HBox.hgrow="ALWAYS" styleClass="barra-avance"/>
+            <Label fx:id="resumen" styleClass="resultado-frase" minWidth="-Infinity"/>
+        </HBox>
+
+        <VBox fx:id="etapas" spacing="10"/>
+
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <padding><Insets top="8"/></padding>
+            <Button fx:id="botonDesistir" styleClass="boton-borde" onAction="#desistir"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="Eliminar postulación" styleClass="boton-peligro" onAction="#eliminar"/>
+        </HBox>
+    </VBox>
+</ScrollPane>

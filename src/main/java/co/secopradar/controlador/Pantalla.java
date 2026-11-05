@@ -7,6 +7,8 @@ public enum Pantalla {
     PERFILES("perfiles.fxml", "Mis búsquedas"),
     NUEVO_PERFIL("nuevoPerfil.fxml", "Nuevo perfil"),
     DOCUMENTOS("documentos.fxml", "Mis documentos"),
+    POSTULACIONES("postulaciones.fxml", "Mis postulaciones"),
+    POSTULACION("postulacion.fxml", "Postulación"),
     BUSCAR("buscar.fxml", "Buscar"),
     PLANES("planes.fxml", "Planes"),
     CUENTA("cuenta.fxml", "Mi cuenta"),
