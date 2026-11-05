@@ -14,9 +14,10 @@ import java.util.Map;
 /**
  * Filtros del panel. Viven en la URL (?q=...&cierra=semana...) para que
  * se puedan recargar y compartir (port de dashboard/filtros.js).
+ * ocultas: incluir los procesos que el usuario ocultó (casilla "Mostrar ocultas").
  */
 public record Filtros(String q, String entidad, String departamento, String region, String modalidad,
-                      String cierra, List<String> valor, String orden, int limite) {
+                      String cierra, List<String> valor, String orden, int limite, boolean ocultas) {
 
     public static final int LIMITE_INICIAL = 50;
     public static final int LIMITE_MAXIMO = 500;
@@ -54,7 +55,8 @@ public record Filtros(String q, String entidad, String departamento, String regi
                 OPCIONES_CIERRE.stream().anyMatch(o -> o[0].equals(cierra)) ? cierra : "",
                 valor,
                 OPCIONES_ORDEN.stream().anyMatch(o -> o[0].equals(orden)) ? orden : "relevancia",
-                Math.min(Math.max(limite, LIMITE_INICIAL), LIMITE_MAXIMO));
+                Math.min(Math.max(limite, LIMITE_INICIAL), LIMITE_MAXIMO),
+                "true".equals(sp.get("ocultas")));
     }
 
     /** Cuántos filtros (no el orden ni la paginación) están activos. */
@@ -70,25 +72,25 @@ public record Filtros(String q, String entidad, String departamento, String regi
     }
 
     public Filtros conQ(String q) {
-        return new Filtros(q, entidad, departamento, region, modalidad, cierra, valor, orden, LIMITE_INICIAL);
+        return new Filtros(q, entidad, departamento, region, modalidad, cierra, valor, orden, LIMITE_INICIAL, ocultas);
     }
 
     public Filtros conCierra(String c) {
-        return new Filtros(q, entidad, departamento, region, modalidad, c, valor, orden, LIMITE_INICIAL);
+        return new Filtros(q, entidad, departamento, region, modalidad, c, valor, orden, LIMITE_INICIAL, ocultas);
     }
 
     public Filtros alternarValor(String id) {
         List<String> v = new ArrayList<>(valor);
         if (!v.remove(id)) v.add(id);
-        return new Filtros(q, entidad, departamento, region, modalidad, cierra, v, orden, LIMITE_INICIAL);
+        return new Filtros(q, entidad, departamento, region, modalidad, cierra, v, orden, LIMITE_INICIAL, ocultas);
     }
 
     public Filtros conLimite(int l) {
-        return new Filtros(q, entidad, departamento, region, modalidad, cierra, valor, orden, l);
+        return new Filtros(q, entidad, departamento, region, modalidad, cierra, valor, orden, l, ocultas);
     }
 
     public static Filtros sinFiltros(String orden) {
-        return new Filtros("", "", "", "", "", "", List.of(), orden, LIMITE_INICIAL);
+        return new Filtros("", "", "", "", "", "", List.of(), orden, LIMITE_INICIAL, false);
     }
 
     /** Enlace al panel con estos filtros. */
@@ -103,6 +105,7 @@ public record Filtros(String q, String entidad, String departamento, String regi
         if (!valor.isEmpty()) qs.put("valor", String.join(",", valor));
         if (!"relevancia".equals(orden)) qs.put("orden", orden);
         if (limite != LIMITE_INICIAL) qs.put("limite", String.valueOf(limite));
+        if (ocultas) qs.put("ocultas", "true");
         if (qs.isEmpty()) return "/dashboard";
         StringBuilder sb = new StringBuilder("/dashboard?");
         qs.forEach((k, v) -> {

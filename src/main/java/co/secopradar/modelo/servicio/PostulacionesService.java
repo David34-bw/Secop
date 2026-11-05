@@ -5,8 +5,8 @@ import co.secopradar.modelo.Etapa;
 import co.secopradar.modelo.Modalidades;
 import co.secopradar.modelo.Postulacion;
 import co.secopradar.modelo.Proceso;
-import co.secopradar.modelo.dao.PostulacionDAO;
-import co.secopradar.modelo.dao.ProcesoDAO;
+import co.secopradar.modelo.repositorio.PostulacionRepositorio;
+import co.secopradar.modelo.repositorio.ProcesoRepositorio;
 import co.secopradar.modelo.util.Formato;
 
 import java.nio.file.Path;
@@ -34,11 +34,11 @@ public class PostulacionesService {
     public record Detalle(Postulacion postulacion, Avance avance) {
     }
 
-    private final PostulacionDAO postulaciones;
-    private final ProcesoDAO procesos;
+    private final PostulacionRepositorio postulaciones;
+    private final ProcesoRepositorio procesos;
     private final DocumentosService documentos;
 
-    public PostulacionesService(PostulacionDAO postulaciones, ProcesoDAO procesos, DocumentosService documentos) {
+    public PostulacionesService(PostulacionRepositorio postulaciones, ProcesoRepositorio procesos, DocumentosService documentos) {
         this.postulaciones = postulaciones;
         this.procesos = procesos;
         this.documentos = documentos;

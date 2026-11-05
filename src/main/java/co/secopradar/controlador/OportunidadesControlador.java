@@ -14,6 +14,7 @@ import co.secopradar.modelo.util.Formato;
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
@@ -70,6 +71,7 @@ public class OportunidadesControlador {
     @FXML private Label ayudaVacio;
     @FXML private VBox lista;
     @FXML private Button cargarMas;
+    @FXML private CheckBox mostrarOcultas;
 
     private final Servicios s = Servicios.get();
     private final PauseTransition espera = new PauseTransition(Duration.millis(400));
@@ -114,6 +116,7 @@ public class OportunidadesControlador {
             else refrescarDesdeFiltro();
         });
         espera.setOnFinished(e -> refrescarDesdeFiltro());
+        mostrarOcultas.selectedProperty().addListener((o, a, n) -> refrescarDesdeFiltro());
         q.textProperty().addListener((o, a, n) -> espera.playFromStart());
         entidad.getEditor().textProperty().addListener((o, a, n) -> espera.playFromStart());
 
@@ -149,7 +152,7 @@ public class OportunidadesControlador {
 
     @FXML
     private void marcarNuevasComoVistas() {
-        if (nuevas != null) s.coincidencias.marcarNotificadas(nuevas.idsCoincidencias());
+        if (nuevas != null) s.oportunidades.marcarVistas(usuario.id(), nuevas.idsCoincidencias());
         Vistas.mostrar(cajaNuevas, false);
     }
 
@@ -164,6 +167,7 @@ public class OportunidadesControlador {
         m.put("valor", String.join(",", botonesValor.stream().filter(ToggleButton::isSelected).map(b -> (String) b.getUserData()).toList()));
         m.put("orden", orden.getValue() == null ? "relevancia" : orden.getValue()[0]);
         m.put("limite", String.valueOf(limite));
+        m.put("ocultas", String.valueOf(mostrarOcultas.isSelected()));
         return Filtros.leer(m);
     }
 
@@ -224,7 +228,23 @@ public class OportunidadesControlador {
         }
 
         lista.getChildren().clear();
-        var ctx = TarjetaOportunidadControlador.Contexto.delUsuario();
+        int nOcultas = panel.ocultasPorUsuario();
+        Vistas.mostrar(mostrarOcultas, nOcultas > 0 || mostrarOcultas.isSelected());
+        mostrarOcultas.setText("Mostrar ocultas (" + nOcultas + ")");
+        var ctx = TarjetaOportunidadControlador.Contexto.delUsuario().conOcultar(panel.procesosOcultos(),
+                new TarjetaOportunidadControlador.AccionesOcultar() {
+                    @Override
+                    public void ocultar(Oportunidad o) {
+                        s.oportunidades.ocultar(usuario.id(), o.proceso().id());
+                        refrescar();
+                    }
+
+                    @Override
+                    public void mostrar(Oportunidad o) {
+                        s.oportunidades.mostrar(usuario.id(), o.proceso().id());
+                        refrescar();
+                    }
+                });
         for (Oportunidad o : panel.oportunidades()) lista.getChildren().add(TarjetaOportunidadControlador.crear(o, true, ctx));
         Vistas.mostrar(cargarMas, panel.hayMas());
     }

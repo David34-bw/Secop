@@ -4,8 +4,8 @@ import co.secopradar.modelo.Documento;
 import co.secopradar.modelo.Preparacion;
 import co.secopradar.modelo.Proponente;
 import co.secopradar.modelo.TipoDocumento;
-import co.secopradar.modelo.dao.DocumentoDAO;
-import co.secopradar.modelo.dao.ProponenteDAO;
+import co.secopradar.modelo.repositorio.DocumentoRepositorio;
+import co.secopradar.modelo.repositorio.ProponenteRepositorio;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -43,10 +43,10 @@ public class DocumentosService {
         }
     }
 
-    private final ProponenteDAO proponentes;
-    private final DocumentoDAO documentos;
+    private final ProponenteRepositorio proponentes;
+    private final DocumentoRepositorio documentos;
 
-    public DocumentosService(ProponenteDAO proponentes, DocumentoDAO documentos) {
+    public DocumentosService(ProponenteRepositorio proponentes, DocumentoRepositorio documentos) {
         this.proponentes = proponentes;
         this.documentos = documentos;
     }

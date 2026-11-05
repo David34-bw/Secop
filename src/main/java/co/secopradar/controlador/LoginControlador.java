@@ -28,7 +28,7 @@ public class LoginControlador {
     private void initialize() {
         email.requestFocus();
         Vistas.mostrarError(avisoConexion, s.avisoConexion);
-        baseDatos.setText("Datos en: " + co.secopradar.modelo.dao.BaseDatos.descripcion());
+        baseDatos.setText("Datos en: " + s.descripcionDatos());
     }
 
     @FXML
@@ -43,7 +43,14 @@ public class LoginControlador {
             Vistas.mostrarError(error, "Demasiados intentos. Intenta de nuevo en unos minutos.");
             return;
         }
-        Optional<Usuario> u = s.cuentas.autenticar(correo, password.getText());
+        Optional<Usuario> u;
+        try {
+            u = s.cuentas.autenticar(correo, password.getText());
+        } catch (co.secopradar.modelo.servicio.CuentaService.ErrorCuenta e) {
+            // Modo API: bloqueo por intentos o sin conexión con el servidor.
+            Vistas.mostrarError(error, e.getMessage());
+            return;
+        }
         if (u.isEmpty()) {
             Vistas.mostrarError(error, "Correo o contraseña incorrectos");
             password.clear();

@@ -25,6 +25,26 @@ Las tablas están en el esquema **`secop`** del proyecto (no en `public`), con R
 con las claves públicas de Supabase, solo desde la app. La primera vez que la app abre con la base vacía
 descarga los procesos de SECOP II de los últimos 7 días.
 
+### Modo API por HTTPS (redes que bloquean PostgreSQL)
+
+En algunas redes (por ejemplo, la universidad) el firewall corta el puerto 5432 de PostgreSQL. Para eso
+existe `bd.modo=api` en `config.properties`: la app habla por HTTPS (puerto 443) con la Edge Function
+`api` de Supabase y **no necesita la contraseña de la base**, solo la clave *publishable*:
+
+La clave publishable ya está en `config.properties` (es pública por diseño). Para dejar todo listo en
+Supabase hay un script que se ejecuta una sola vez, desde un PC que sí llegue a PostgreSQL:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\configurar-api.ps1
+```
+
+Al terminar pone `bd.modo=api` en `config.properties`; con commit y push, cualquier computador (por ejemplo
+el de la universidad) solo necesita `git pull` y ejecutar la app.
+
+En modo API la actualización diaria de SECOP la hace el servidor (no cada computador) y los documentos
+se guardan en Supabase Storage. El código del servidor está en `supabase/` y la guía de despliegue en
+`docs/api-https/`. Si la API no responde, la app usa la base local y lo avisa.
+
 ## Cómo correrlo en IntelliJ IDEA
 
 1. **Abrir el proyecto**: `File > Open...` → carpeta del proyecto (la que tiene `pom.xml`) → **Trust Project**.

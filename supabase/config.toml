@@ -1,0 +1,7 @@
+# Configuración de Supabase CLI para SECOP RADAR (solo lo que difiere de lo normal).
+project_id = "secop-radar"
+
+[functions.api]
+# La app usa la clave publishable (sb_publishable_...), que no es un JWT:
+# la verificación la hace el propio código de la función (apikey + token de sesión).
+verify_jwt = false

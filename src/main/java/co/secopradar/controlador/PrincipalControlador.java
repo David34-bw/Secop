@@ -52,7 +52,7 @@ public class PrincipalControlador {
 
     private void pintarEstado(String mensaje) {
         boolean corriendo = s.actualizacion.estaCorriendo();
-        String base = co.secopradar.modelo.dao.BaseDatos.esPostgres() ? "Supabase" : "base local";
+        String base = s.enLaNube() ? "Supabase" : "base local";
         estado.setText(corriendo ? mensaje : mensaje + "  ·  " + s.procesos.contar() + " procesos en " + base
                 + (s.avisoConexion != null ? "  ·  ⚠ " + s.avisoConexion : ""));
         Vistas.clase(indicador, "corriendo", corriendo);
@@ -95,7 +95,7 @@ public class PrincipalControlador {
 
     @FXML
     private void salir() {
-        Sesion.cerrar();
+        s.salir();
         Navegador.irALogin();
     }
 }

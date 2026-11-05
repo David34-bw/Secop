@@ -1,6 +1,6 @@
 package co.secopradar.modelo.servicio;
 
-import co.secopradar.modelo.dao.ProcesoDAO;
+import co.secopradar.modelo.repositorio.ProcesoRepositorio;
 import co.secopradar.modelo.util.Formato;
 
 import java.time.Duration;
@@ -31,7 +31,7 @@ public class CronService {
     private final CoincidenciasService coincidencias;
     private final PlanesService planes;
     private final PortadaService portada;
-    private final ProcesoDAO procesos;
+    private final ProcesoRepositorio procesos;
     private final int diasAtras;
     private final int horaDiaria;
 
@@ -46,7 +46,7 @@ public class CronService {
     private volatile Instant ultimaCorrida;
 
     public CronService(IngestaService ingesta, CoincidenciasService coincidencias, PlanesService planes,
-                       PortadaService portada, ProcesoDAO procesos, int diasAtras, int horaDiaria) {
+                       PortadaService portada, ProcesoRepositorio procesos, int diasAtras, int horaDiaria) {
         this.ingesta = ingesta;
         this.coincidencias = coincidencias;
         this.planes = planes;
@@ -101,7 +101,7 @@ public class CronService {
         }
     }
 
-    private void avisar(String mensaje) {
+    protected void avisar(String mensaje) {
         ultimoResultado = mensaje;
         oyentes.values().forEach(o -> o.accept(mensaje));
     }

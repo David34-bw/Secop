@@ -7,7 +7,7 @@ import co.secopradar.modelo.Perfil;
 import co.secopradar.modelo.Plan;
 import co.secopradar.modelo.RangoValor;
 import co.secopradar.modelo.Usuario;
-import co.secopradar.modelo.dao.PerfilDAO;
+import co.secopradar.modelo.repositorio.PerfilRepositorio;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,12 +38,12 @@ public class PerfilesService {
     public record Creado(int id, int coincidencias) {
     }
 
-    private final PerfilDAO perfiles;
+    private final PerfilRepositorio perfiles;
     private final PlanesService planes;
     private final CoincidenciasService cruce;
     private final Catalogo catalogo = Catalogo.get();
 
-    public PerfilesService(PerfilDAO perfiles, PlanesService planes, CoincidenciasService cruce) {
+    public PerfilesService(PerfilRepositorio perfiles, PlanesService planes, CoincidenciasService cruce) {
         this.perfiles = perfiles;
         this.planes = planes;
         this.cruce = cruce;

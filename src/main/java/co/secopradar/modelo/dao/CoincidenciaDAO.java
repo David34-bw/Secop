@@ -1,5 +1,6 @@
 package co.secopradar.modelo.dao;
 
+import co.secopradar.modelo.repositorio.CoincidenciaRepositorio;
 import co.secopradar.modelo.Proceso;
 
 import java.time.OffsetDateTime;
@@ -9,13 +10,10 @@ import java.util.List;
 import java.util.Map;
 
 /** Acceso a la tabla coincidencias (qué proceso encontró cada perfil y con qué puntaje). */
-public class CoincidenciaDAO {
-
-    /** Una coincidencia con su proceso y el perfil que la encontró. */
-    public record Fila(int id, int score, boolean notificado, int perfilId, String perfil, Proceso proceso) {
-    }
+public class CoincidenciaDAO implements CoincidenciaRepositorio {
 
     /** Coincidencias guardadas de un perfil: proceso -> puntaje. */
+    @Override
     public Map<String, Integer> dePerfil(int perfilId) {
         Map<String, Integer> m = new HashMap<>();
         BaseDatos.consultar("SELECT proceso_id, score FROM coincidencias WHERE perfil_id = ?",
@@ -23,6 +21,7 @@ public class CoincidenciaDAO {
         return m;
     }
 
+    @Override
     public void insertar(int perfilId, Map<String, Integer> scores, boolean notificado) {
         BaseDatos.lote("INSERT INTO coincidencias (perfil_id, proceso_id, score, notificado) VALUES (?, ?, ?, ?)",
                 scores.entrySet(), (ps, e) -> {
@@ -33,6 +32,7 @@ public class CoincidenciaDAO {
                 });
     }
 
+    @Override
     public void actualizarScores(int perfilId, Map<String, Integer> scores) {
         BaseDatos.lote("UPDATE coincidencias SET score = ? WHERE perfil_id = ? AND proceso_id = ?",
                 scores.entrySet(), (ps, e) -> {
@@ -42,6 +42,7 @@ public class CoincidenciaDAO {
                 });
     }
 
+    @Override
     public int eliminar(int perfilId, Collection<String> procesoIds) {
         if (procesoIds.isEmpty()) return 0;
         Object[] params = new Object[procesoIds.size() + 1];
@@ -56,6 +57,7 @@ public class CoincidenciaDAO {
      * Coincidencias de los perfiles activos del usuario con procesos que no
      * han cerrado. Los duplicados y el límite del plan se resuelven en Java.
      */
+    @Override
     public List<Fila> vigentesDeUsuario(int userId) {
         return BaseDatos.consultar("SELECT c.id AS c_id, c.score, c.notificado, pf.id AS pf_id, pf.nombre AS perfil, "
                         + prefijo("p", ProcesoDAO.COLUMNAS)
@@ -76,13 +78,19 @@ public class CoincidenciaDAO {
         return sb.toString();
     }
 
-    /** Marca como vistas (ya avisadas) las coincidencias. */
-    public void marcarNotificadas(Collection<Integer> ids) {
+    /** Marca como vistas (ya avisadas) las coincidencias, solo si son de perfiles del usuario. */
+    @Override
+    public void marcarNotificadas(int userId, Collection<Integer> ids) {
         if (ids.isEmpty()) return;
-        BaseDatos.actualizar("UPDATE coincidencias SET notificado = TRUE WHERE id IN ("
-                + BaseDatos.marcadores(ids.size()) + ")", ids.toArray());
+        Object[] params = new Object[ids.size() + 1];
+        int i = 0;
+        for (Integer id : ids) params[i++] = id;
+        params[i] = userId;
+        BaseDatos.actualizar("UPDATE coincidencias SET notificado = TRUE WHERE id IN (" + BaseDatos.marcadores(ids.size())
+                + ") AND perfil_id IN (SELECT id FROM perfiles WHERE user_id = ?)", params);
     }
 
+    @Override
     public long contar() {
         return BaseDatos.numero("SELECT count(*) FROM coincidencias");
     }

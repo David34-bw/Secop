@@ -6,12 +6,20 @@ import co.secopradar.modelo.Sesion;
 import co.secopradar.modelo.servicio.PostulacionesService;
 import co.secopradar.modelo.servicio.Servicios;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.VBox;
+
+import java.util.Map;
+import java.util.Set;
 
 /** Controlador de tarjetaOportunidad.fxml: pinta un proceso (Oportunidad del modelo). */
 public class TarjetaOportunidadControlador {
@@ -36,14 +44,30 @@ public class TarjetaOportunidadControlador {
     private Integer postulacionId;
 
     /**
-     * Lo que la tarjeta necesita saber del usuario, calculado una vez por lista:
-     * sus documentos y los procesos a los que ya se postuló (proceso -> postulación).
+     * Qué hacer al elegir Ocultar o Volver a mostrar en el menú. Lo pone la
+     * pantalla que lo permite (Oportunidades); null = sin esas opciones.
      */
-    public record Contexto(Preparacion preparacion, java.util.Map<String, Integer> postulaciones) {
+    public interface AccionesOcultar {
+        void ocultar(Oportunidad o);
+
+        void mostrar(Oportunidad o);
+    }
+
+    /**
+     * Lo que la tarjeta necesita saber del usuario, calculado una vez por lista:
+     * sus documentos, los procesos a los que ya se postuló (proceso -> postulación)
+     * y los que ocultó.
+     */
+    public record Contexto(Preparacion preparacion, Map<String, Integer> postulaciones, Set<String> ocultos,
+                           AccionesOcultar acciones) {
         public static Contexto delUsuario() {
             Servicios s = Servicios.get();
             int u = Sesion.usuarioId();
-            return new Contexto(s.documentos.preparacion(u), s.postulaciones.idsPorProceso(u));
+            return new Contexto(s.documentos.preparacion(u), s.postulaciones.idsPorProceso(u), Set.of(), null);
+        }
+
+        public Contexto conOcultar(Set<String> ocultos, AccionesOcultar acciones) {
+            return new Contexto(preparacion, postulaciones, ocultos, acciones);
         }
     }
 
@@ -57,7 +81,37 @@ public class TarjetaOportunidadControlador {
         v.controlador().mostrar(o, mostrarPerfil);
         v.controlador().mostrarDocumentos(o, ctx.preparacion());
         v.controlador().mostrarPostulacion(o, ctx.postulaciones().get(o.proceso().id()));
+        v.controlador().armarMenu(o, ctx.ocultos().contains(o.proceso().id()), ctx.acciones());
         return v.raiz();
+    }
+
+    /** Menú del clic derecho: abrir, copiar el enlace y ocultar / volver a mostrar. */
+    private void armarMenu(Oportunidad o, boolean oculta, AccionesOcultar acciones) {
+        boolean sinUrl = o.url() == null || o.url().isBlank();
+        MenuItem abrir = new MenuItem("Abrir en SECOP II");
+        abrir.setOnAction(e -> Navegador.abrirEnlace(o.url()));
+        abrir.setDisable(sinUrl);
+        MenuItem copiar = new MenuItem("Copiar enlace");
+        copiar.setOnAction(e -> {
+            ClipboardContent c = new ClipboardContent();
+            c.putString(o.url());
+            Clipboard.getSystemClipboard().setContent(c);
+        });
+        copiar.setDisable(sinUrl);
+        ContextMenu menu = new ContextMenu(abrir, copiar);
+        if (acciones != null) {
+            MenuItem ocultar = new MenuItem(oculta ? "Volver a mostrar" : "Ocultar oportunidad");
+            ocultar.setOnAction(e -> {
+                if (oculta) acciones.mostrar(o);
+                else acciones.ocultar(o);
+            });
+            menu.getItems().addAll(new SeparatorMenuItem(), ocultar);
+        }
+        tarjeta.setOnContextMenuRequested(e -> menu.show(tarjeta, e.getScreenX(), e.getScreenY()));
+        if (oculta) {
+            tarjeta.getStyleClass().add("tarjeta-oculta");
+            perfil.setText("Oculta" + (perfil.getText().isEmpty() ? "" : " · " + perfil.getText()));
+        }
     }
 
     private void mostrarPostulacion(Oportunidad o, Integer id) {

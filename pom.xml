@@ -67,6 +67,12 @@
             <artifactId>jackson-databind</artifactId>
             <version>${jackson.version}</version>
         </dependency>
+        <!-- Fechas (OffsetDateTime, LocalDate) en el JSON de la API por HTTPS -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
 
         <!-- Hash de contraseñas (compatible con las cuentas ya creadas) -->
         <dependency>

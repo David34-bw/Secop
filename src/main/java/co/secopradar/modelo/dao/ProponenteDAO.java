@@ -1,12 +1,13 @@
 package co.secopradar.modelo.dao;
 
+import co.secopradar.modelo.repositorio.ProponenteRepositorio;
 import co.secopradar.modelo.Proponente;
 
 import java.time.OffsetDateTime;
 import java.util.Optional;
 
 /** Acceso a la tabla proponentes (una fila por usuario, se crea al guardar por primera vez). */
-public class ProponenteDAO {
+public class ProponenteDAO implements ProponenteRepositorio {
 
     private static final String COLUMNAS = "tipo_persona, tipo_documento, numero_documento, telefono, departamento, "
             + "ciudad, profesion, titulo, universidad, matricula_profesional, anios_experiencia, resumen, "
@@ -19,10 +20,12 @@ public class ProponenteDAO {
             Filas.entero(rs, "anios_experiencia"), rs.getString("resumen"), rs.getBoolean("registrado_secop"),
             rs.getBoolean("tiene_rup"), rs.getString("numero_rup"), rs.getBoolean("sigep_actualizada"));
 
+    @Override
     public Optional<Proponente> deUsuario(int usuarioId) {
         return BaseDatos.uno("SELECT " + COLUMNAS + " FROM proponentes WHERE user_id = ?", MAPEADOR, usuarioId);
     }
 
+    @Override
     public void guardar(int usuarioId, Proponente p) {
         Object[] valores = {p.tipoPersona(), p.tipoDocumento(), p.numeroDocumento(), p.telefono(), p.departamento(),
                 p.ciudad(), p.profesion(), p.titulo(), p.universidad(), p.matriculaProfesional(), p.aniosExperiencia(),

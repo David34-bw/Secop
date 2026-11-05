@@ -4,7 +4,7 @@ import co.secopradar.modelo.Oportunidad;
 import co.secopradar.modelo.Catalogo;
 import co.secopradar.modelo.Perfil;
 import co.secopradar.modelo.Proceso;
-import co.secopradar.modelo.dao.ProcesoDAO;
+import co.secopradar.modelo.repositorio.ProcesoRepositorio;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -27,9 +27,9 @@ public class BusquedaService {
     public record Resultado(int total, List<Oportunidad> oportunidades) {
     }
 
-    private final ProcesoDAO procesos;
+    private final ProcesoRepositorio procesos;
 
-    public BusquedaService(ProcesoDAO procesos) {
+    public BusquedaService(ProcesoRepositorio procesos) {
         this.procesos = procesos;
     }
 

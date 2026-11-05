@@ -2,8 +2,8 @@ package co.secopradar.modelo.servicio;
 
 import co.secopradar.modelo.Modalidades;
 import co.secopradar.modelo.Proceso;
-import co.secopradar.modelo.dao.LogDAO;
-import co.secopradar.modelo.dao.ProcesoDAO;
+import co.secopradar.modelo.repositorio.LogRepositorio;
+import co.secopradar.modelo.repositorio.ProcesoRepositorio;
 import co.secopradar.modelo.util.Formato;
 import co.secopradar.modelo.util.Texto;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -45,8 +45,8 @@ public class IngestaService {
     public record Resultado(int leidos, int nuevos, int actualizados) {
     }
 
-    private final ProcesoDAO procesos;
-    private final LogDAO logs;
+    private final ProcesoRepositorio procesos;
+    private final LogRepositorio logs;
     private final ObjectMapper json;
     private final HttpClient http = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(30))
@@ -54,7 +54,7 @@ public class IngestaService {
             .build();
     private final String appToken;
 
-    public IngestaService(ProcesoDAO procesos, LogDAO logs, ObjectMapper json,
+    public IngestaService(ProcesoRepositorio procesos, LogRepositorio logs, ObjectMapper json,
                           String appToken) {
         this.procesos = procesos;
         this.logs = logs;
@@ -142,17 +142,17 @@ public class IngestaService {
 
     private Resultado guardar(JsonNode crudos) {
         // Si la fuente repite un id en la página, se queda la última versión.
-        Map<String, ProcesoDAO.Fila> porId = new LinkedHashMap<>();
+        Map<String, ProcesoRepositorio.Fila> porId = new LinkedHashMap<>();
         for (JsonNode p : crudos) {
-            ProcesoDAO.Fila f = normalizar(p);
+            ProcesoRepositorio.Fila f = normalizar(p);
             if (f.proceso().id() != null) porId.put(f.proceso().id(), f);
         }
         if (porId.isEmpty()) return new Resultado(0, 0, 0);
 
         Set<String> existentes = procesos.existentes(porId.keySet());
-        List<ProcesoDAO.Fila> nuevos = new ArrayList<>();
-        List<ProcesoDAO.Fila> viejos = new ArrayList<>();
-        for (ProcesoDAO.Fila f : porId.values()) {
+        List<ProcesoRepositorio.Fila> nuevos = new ArrayList<>();
+        List<ProcesoRepositorio.Fila> viejos = new ArrayList<>();
+        for (ProcesoRepositorio.Fila f : porId.values()) {
             (existentes.contains(f.proceso().id()) ? viejos : nuevos).add(f);
         }
         if (!nuevos.isEmpty()) procesos.insertar(nuevos);
@@ -160,7 +160,7 @@ public class IngestaService {
         return new Resultado(porId.size(), nuevos.size(), viejos.size());
     }
 
-    ProcesoDAO.Fila normalizar(JsonNode p) {
+    ProcesoRepositorio.Fila normalizar(JsonNode p) {
         String objeto = texto(p, "descripci_n_del_procedimiento");
         if (objeto == null) objeto = texto(p, "nombre_del_procedimiento");
         Proceso proceso = new Proceso(
@@ -180,7 +180,7 @@ public class IngestaService {
                 p.path("urlproceso").path("url").isTextual() ? p.path("urlproceso").path("url").asText() : null,
                 texto(p, "ordenentidad"));
         Long respuestas = numero(p, "respuestas_al_procedimiento");
-        return new ProcesoDAO.Fila(proceso, texto(p, "estado_del_procedimiento"),
+        return new ProcesoRepositorio.Fila(proceso, texto(p, "estado_del_procedimiento"),
                 respuestas == null ? null : respuestas.intValue(), p.toString());
     }
 

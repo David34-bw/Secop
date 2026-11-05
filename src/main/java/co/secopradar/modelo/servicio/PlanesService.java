@@ -3,8 +3,8 @@ package co.secopradar.modelo.servicio;
 import co.secopradar.modelo.Perfil;
 import co.secopradar.modelo.Plan;
 import co.secopradar.modelo.Usuario;
-import co.secopradar.modelo.dao.PerfilDAO;
-import co.secopradar.modelo.dao.UsuarioDAO;
+import co.secopradar.modelo.repositorio.PerfilRepositorio;
+import co.secopradar.modelo.repositorio.UsuarioRepositorio;
 import co.secopradar.modelo.util.Registro;
 
 import java.util.List;
@@ -17,10 +17,10 @@ public class PlanesService {
     public record Resultado(int desactivados, int reactivados) {
     }
 
-    private final UsuarioDAO usuarios;
-    private final PerfilDAO perfiles;
+    private final UsuarioRepositorio usuarios;
+    private final PerfilRepositorio perfiles;
 
-    public PlanesService(UsuarioDAO usuarios, PerfilDAO perfiles) {
+    public PlanesService(UsuarioRepositorio usuarios, PerfilRepositorio perfiles) {
         this.usuarios = usuarios;
         this.perfiles = perfiles;
     }

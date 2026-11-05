@@ -7,3 +7,9 @@ out/
 .claude/
 # Contraseña de Supabase: nunca se sube
 config.local.properties
+
+# Supabase CLI (local) y secretos de las funciones
+supabase/.temp/
+supabase/.branches/
+supabase/functions/.env
+supabase/functions/.env.*

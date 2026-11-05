@@ -2,10 +2,10 @@ package co.secopradar.modelo.servicio;
 
 import co.secopradar.modelo.Perfil;
 import co.secopradar.modelo.Proceso;
-import co.secopradar.modelo.dao.CoincidenciaDAO;
-import co.secopradar.modelo.dao.LogDAO;
-import co.secopradar.modelo.dao.PerfilDAO;
-import co.secopradar.modelo.dao.ProcesoDAO;
+import co.secopradar.modelo.repositorio.CoincidenciaRepositorio;
+import co.secopradar.modelo.repositorio.LogRepositorio;
+import co.secopradar.modelo.repositorio.PerfilRepositorio;
+import co.secopradar.modelo.repositorio.ProcesoRepositorio;
 import co.secopradar.modelo.util.Registro;
 
 import java.time.Instant;
@@ -22,13 +22,13 @@ public class CoincidenciasService {
     public record Resultado(int perfiles, int procesos, int nuevas, int quitadas) {
     }
 
-    private final PerfilDAO perfiles;
-    private final ProcesoDAO procesos;
-    private final CoincidenciaDAO coincidencias;
-    private final LogDAO logs;
+    private final PerfilRepositorio perfiles;
+    private final ProcesoRepositorio procesos;
+    private final CoincidenciaRepositorio coincidencias;
+    private final LogRepositorio logs;
 
-    public CoincidenciasService(PerfilDAO perfiles, ProcesoDAO procesos,
-                                CoincidenciaDAO coincidencias, LogDAO logs) {
+    public CoincidenciasService(PerfilRepositorio perfiles, ProcesoRepositorio procesos,
+                                CoincidenciaRepositorio coincidencias, LogRepositorio logs) {
         this.perfiles = perfiles;
         this.procesos = procesos;
         this.coincidencias = coincidencias;

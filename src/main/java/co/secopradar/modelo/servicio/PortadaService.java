@@ -1,7 +1,7 @@
 package co.secopradar.modelo.servicio;
 
 import co.secopradar.modelo.Region;
-import co.secopradar.modelo.dao.ProcesoDAO;
+import co.secopradar.modelo.repositorio.ProcesoRepositorio;
 import co.secopradar.modelo.util.Formato;
 
 import java.time.Instant;
@@ -47,10 +47,10 @@ public class PortadaService {
         }
     }
 
-    private final ProcesoDAO procesos;
+    private final ProcesoRepositorio procesos;
     private volatile Datos cache;
 
-    public PortadaService(ProcesoDAO procesos) {
+    public PortadaService(ProcesoRepositorio procesos) {
         this.procesos = procesos;
     }
 

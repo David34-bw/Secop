@@ -1,5 +1,6 @@
 package co.secopradar.modelo.dao;
 
+import co.secopradar.modelo.repositorio.ProcesoRepositorio;
 import co.secopradar.modelo.Proceso;
 
 import java.sql.Types;
@@ -12,7 +13,7 @@ import java.util.Map;
 import java.util.Set;
 
 /** Acceso a la tabla procesos (los procesos descargados de SECOP II). */
-public class ProcesoDAO {
+public class ProcesoDAO implements ProcesoRepositorio {
 
     static final String COLUMNAS = "id_del_proceso, entidad, nombre, objeto, modalidad, categoria, tipo_contrato, valor, "
             + "departamento, ciudad, estado_apertura, fecha_publicacion, fecha_cierre, url, ordenentidad";
@@ -24,22 +25,21 @@ public class ProcesoDAO {
             rs.getString("estado_apertura"), Filas.fecha(rs, "fecha_publicacion"), Filas.fecha(rs, "fecha_cierre"),
             rs.getString("url"), rs.getString("ordenentidad"));
 
-    /** Fila lista para guardar: el proceso más los campos extra de la fuente. */
-    public record Fila(Proceso proceso, String estadoProcedimiento, Integer respuestas, String raw) {
-    }
-
     /** Procesos vigentes: sin fecha de cierre o que cerraron hace menos de 2 días. */
+    @Override
     public List<Proceso> vigentes() {
         return BaseDatos.consultar("SELECT " + COLUMNAS + " FROM procesos WHERE fecha_cierre IS NULL OR fecha_cierre >= ?",
                 MAPEADOR, OffsetDateTime.now().minusDays(2));
     }
 
+    @Override
     public Set<String> existentes(Collection<String> ids) {
         if (ids.isEmpty()) return Set.of();
         return new HashSet<>(BaseDatos.consultar("SELECT id_del_proceso FROM procesos WHERE id_del_proceso IN ("
                 + BaseDatos.marcadores(ids.size()) + ")", rs -> rs.getString(1), ids.toArray()));
     }
 
+    @Override
     public void insertar(List<Fila> filas) {
         BaseDatos.lote("INSERT INTO procesos (" + COLUMNAS + ", estado_procedimiento, respuestas, raw, ingresado_at) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", filas, (ps, f) -> {
@@ -69,6 +69,7 @@ public class ProcesoDAO {
     }
 
     /** Lo que cambia en la fuente: estado, cierre, valor, entidad y nombre (objeto se conserva). */
+    @Override
     public void actualizar(List<Fila> filas) {
         BaseDatos.lote("UPDATE procesos SET estado_apertura = ?, fecha_cierre = ?, valor = ?, ordenentidad = ?, "
                 + "nombre = ?, estado_procedimiento = ?, respuestas = ?, raw = ? WHERE id_del_proceso = ?", filas, (ps, f) -> {
@@ -87,10 +88,12 @@ public class ProcesoDAO {
         });
     }
 
+    @Override
     public long contar() {
         return BaseDatos.numero("SELECT count(*) FROM procesos");
     }
 
+    @Override
     public OffsetDateTime ultimoIngreso() {
         return BaseDatos.uno("SELECT max(ingresado_at) FROM procesos", rs -> Filas.fecha(rs, 1)).orElse(null);
     }
@@ -98,11 +101,13 @@ public class ProcesoDAO {
     // ---- Datos de la pantalla de inicio ----
 
     /** Procesos abiertos (estado Abierto y cierre que no ha pasado) por departamento y tipo de contrato. */
+    @Override
     public List<Map<String, Object>> abiertosPorDepartamentoYTipo(OffsetDateTime ahora) {
         return BaseDatos.filas("SELECT departamento, tipo_contrato AS tipo, count(*) AS n FROM procesos "
                 + "WHERE estado_apertura = 'Abierto' AND fecha_cierre >= ? GROUP BY departamento, tipo_contrato", ahora);
     }
 
+    @Override
     public Map<String, Object> resumenAbiertos(OffsetDateTime ahora, OffsetDateTime inicioHoy) {
         return BaseDatos.fila("SELECT count(*) AS abiertos, "
                         + "sum(CASE WHEN ingresado_at >= ? THEN 1 ELSE 0 END) AS nuevos_hoy, "
@@ -115,6 +120,7 @@ public class ProcesoDAO {
      * Ofertas recibidas en mínima cuantía, en procesos ya cerrados y en
      * evaluación o adjudicados (donde SECOP registra bien las respuestas).
      */
+    @Override
     public Map<String, Object> ofertasMinimaCuantia(OffsetDateTime ahora) {
         return BaseDatos.fila("SELECT count(*) AS cerrados, "
                         + "sum(CASE WHEN respuestas <= 1 THEN 1 ELSE 0 END) AS una_o_ninguna, "
@@ -124,6 +130,7 @@ public class ProcesoDAO {
                 ahora.minusDays(3));
     }
 
+    @Override
     public List<Proceso> porIds(Collection<String> ids) {
         if (ids.isEmpty()) return new ArrayList<>();
         return BaseDatos.consultar("SELECT " + COLUMNAS + " FROM procesos WHERE id_del_proceso IN ("

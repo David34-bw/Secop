@@ -5,8 +5,9 @@ import co.secopradar.modelo.Plan;
 import co.secopradar.modelo.Proceso;
 import co.secopradar.modelo.RangoValor;
 import co.secopradar.modelo.Region;
-import co.secopradar.modelo.dao.CoincidenciaDAO;
-import co.secopradar.modelo.dao.CoincidenciaDAO.Fila;
+import co.secopradar.modelo.repositorio.CoincidenciaRepositorio;
+import co.secopradar.modelo.repositorio.CoincidenciaRepositorio.Fila;
+import co.secopradar.modelo.repositorio.ProcesoOcultoRepositorio;
 import co.secopradar.modelo.util.Formato;
 import co.secopradar.modelo.util.Texto;
 
@@ -19,6 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Predicate;
 
@@ -27,6 +29,9 @@ import java.util.function.Predicate;
  * dashboard/page.js, lib/limites.js y lib/alertas.js). La consulta trae
  * las coincidencias vigentes y el resto (duplicados, límite del plan,
  * filtros y orden) se hace en Java, igual para H2 y PostgreSQL.
+ *
+ * El usuario puede ocultar procesos (clic derecho en la tarjeta): no salen
+ * en el panel ni en los avisos, salvo con el filtro "Mostrar ocultas".
  */
 public class OportunidadesService {
 
@@ -51,6 +56,8 @@ public class OportunidadesService {
             long valorTotal,
             int totalFiltrado,
             int ocultasPorPlan,
+            int ocultasPorUsuario,
+            Set<String> procesosOcultos,
             List<String> departamentos,
             List<String> modalidades,
             List<String> entidades) {
@@ -64,10 +71,35 @@ public class OportunidadesService {
         }
     }
 
-    private final CoincidenciaDAO coincidencias;
+    private final CoincidenciaRepositorio coincidencias;
+    private final ProcesoOcultoRepositorio ocultos;
 
-    public OportunidadesService(CoincidenciaDAO coincidencias) {
+    public OportunidadesService(CoincidenciaRepositorio coincidencias, ProcesoOcultoRepositorio ocultos) {
         this.coincidencias = coincidencias;
+        this.ocultos = ocultos;
+    }
+
+    public void ocultar(int userId, String procesoId) {
+        ocultos.ocultar(userId, procesoId);
+    }
+
+    public void mostrar(int userId, String procesoId) {
+        ocultos.mostrar(userId, procesoId);
+    }
+
+    /** Marca como vistas las oportunidades nuevas (solo las del usuario). */
+    public void marcarVistas(int userId, List<Integer> idsCoincidencias) {
+        coincidencias.marcarNotificadas(userId, idsCoincidencias);
+    }
+
+    /**
+     * Filas ocultas por el usuario. Se compara por la Clave del proceso para
+     * que tampoco reaparezca si SECOP lo vuelve a publicar con otro id.
+     */
+    static Predicate<Fila> oculta(List<Fila> filas, Set<String> idsOcultos) {
+        Set<Clave> claves = new java.util.HashSet<>();
+        for (Fila f : filas) if (idsOcultos.contains(f.proceso().id())) claves.add(Clave.de(f.proceso()));
+        return f -> claves.contains(Clave.de(f.proceso()));
     }
 
     /** De cada grupo de duplicados queda la publicación más reciente (la vigente en SECOP). */
@@ -94,10 +126,34 @@ public class OportunidadesService {
         return new ArrayList<>(orden.subList(0, plan.maxCoincidencias()));
     }
 
-    public Panel panel(int userId, Plan plan, Filtros f) {
-        List<Fila> vigentes = sinDuplicados(coincidencias.vigentesDeUsuario(userId));
-        List<Fila> visibles = visibles(vigentes, plan);
+    /**
+     * Lo que el usuario puede ver antes de filtros y orden: sin duplicados,
+     * sin ocultos (salvo que los pida) y con el límite del plan. En modo API
+     * lo calcula el servidor (OportunidadesServiceApi).
+     */
+    protected record Base(List<Fila> visibles, int ocultasPorPlan, int ocultasPorUsuario, Set<String> procesosOcultos) {
+    }
+
+    protected Base base(int userId, Plan plan, boolean incluirOcultas) {
+        List<Fila> todas = coincidencias.vigentesDeUsuario(userId);
+        Set<String> idsOcultos = ocultos.deUsuario(userId);
+        Predicate<Fila> oculta = oculta(todas, idsOcultos);
+        List<Fila> sinRepetir = sinDuplicados(todas);
+        int ocultasPorUsuario = (int) sinRepetir.stream().filter(oculta).count();
+        // Las ocultas no cuentan para el límite del plan ni para las cifras.
+        List<Fila> vigentes = incluirOcultas ? sinRepetir : sinRepetir.stream().filter(oculta.negate()).toList();
+        Set<String> procesosOcultos = new java.util.HashSet<>();
+        for (Fila x : sinRepetir) if (oculta.test(x)) procesosOcultos.add(x.proceso().id());
         int ocultas = plan.maxCoincidencias() == null ? 0 : Math.max(vigentes.size() - plan.maxCoincidencias(), 0);
+        return new Base(visibles(vigentes, plan), ocultas, ocultasPorUsuario, procesosOcultos);
+    }
+
+    public Panel panel(int userId, Plan plan, Filtros f) {
+        Base b = base(userId, plan, f.ocultas());
+        List<Fila> visibles = b.visibles();
+        int ocultas = b.ocultasPorPlan();
+        int ocultasPorUsuario = b.ocultasPorUsuario();
+        Set<String> procesosOcultos = b.procesosOcultos();
 
         OffsetDateTime ahora = OffsetDateTime.now();
         OffsetDateTime enUnaSemana = ahora.plusDays(7);
@@ -118,6 +174,7 @@ public class OportunidadesService {
                 .map(OportunidadesService::aOportunidad).toList();
 
         return new Panel(pagina, visibles.size(), cierranSemana, valorTotal, filtradas.size(), ocultas,
+                ocultasPorUsuario, procesosOcultos,
                 new ArrayList<>(deps), new ArrayList<>(mods), new ArrayList<>(ents));
     }
 
@@ -212,7 +269,8 @@ public class OportunidadesService {
      * puntaje del grupo.
      */
     public Pendientes alertasPendientes(int userId) {
-        List<Fila> filas = coincidencias.vigentesDeUsuario(userId);
+        List<Fila> todas = coincidencias.vigentesDeUsuario(userId);
+        List<Fila> filas = todas.stream().filter(oculta(todas, ocultos.deUsuario(userId)).negate()).toList();
         Map<Clave, Boolean> yaAvisados = new HashMap<>();
         for (Fila f : filas) if (f.notificado()) yaAvisados.put(Clave.de(f.proceso()), true);
 

@@ -2,7 +2,7 @@ package co.secopradar.modelo.servicio;
 
 import co.secopradar.modelo.Plan;
 import co.secopradar.modelo.Usuario;
-import co.secopradar.modelo.dao.UsuarioDAO;
+import co.secopradar.modelo.repositorio.UsuarioRepositorio;
 
 import javax.naming.NameNotFoundException;
 import javax.naming.NamingException;
@@ -63,16 +63,16 @@ public class CuentaService {
         }
     }
 
-    private final UsuarioDAO usuarios;
+    private final UsuarioRepositorio usuarios;
 
     /** Consulta DNS: true = recibe correo, false = no, null = no se sabe (no se bloquea). */
     private final Function<String, Boolean> recibeCorreo;
 
-    public CuentaService(UsuarioDAO usuarios) {
+    public CuentaService(UsuarioRepositorio usuarios) {
         this(usuarios, CuentaService::dominioRecibeCorreo);
     }
 
-    CuentaService(UsuarioDAO usuarios, Function<String, Boolean> recibeCorreo) {
+    CuentaService(UsuarioRepositorio usuarios, Function<String, Boolean> recibeCorreo) {
         this.usuarios = usuarios;
         this.recibeCorreo = recibeCorreo;
     }
@@ -139,6 +139,18 @@ public class CuentaService {
      * En esta versión no se envía código de verificación por correo.
      */
     public Usuario registrar(String emailCrudo, String password, String nombre, boolean acepto) {
+        String email = validarRegistro(emailCrudo, password, nombre, acepto);
+        if (usuarios.porEmail(email).isPresent()) throw new ErrorCuenta("Ya existe una cuenta con ese correo");
+
+        String rol = usuarios.contar() == 0 ? "admin" : "usuario";
+        String nombreLimpio = ValidadorNombre.formatear(nombre);
+        int id = usuarios.crear(email, BCrypt.hashpw(password, BCrypt.gensalt(10)), nombreLimpio, rol,
+                OffsetDateTime.now().plusDays(Plan.DIAS_PRUEBA), VERSION_TERMINOS, VERSION_PRIVACIDAD);
+        return usuarios.porId(id).orElseThrow();
+    }
+
+    /** Reglas del registro que se revisan en la app (también en modo API). Devuelve el correo limpio. */
+    protected String validarRegistro(String emailCrudo, String password, String nombre, boolean acepto) {
         String email = limpiarCorreo(emailCrudo);
         if (email.isEmpty() || password == null || password.isEmpty()) {
             throw new ErrorCuenta("Correo y contraseña son obligatorios");
@@ -152,13 +164,11 @@ public class CuentaService {
         if (!acepto) {
             throw new ErrorCuenta("Debes aceptar los Términos y condiciones y la Política de tratamiento de datos personales");
         }
-        if (usuarios.porEmail(email).isPresent()) throw new ErrorCuenta("Ya existe una cuenta con ese correo");
+        return email;
+    }
 
-        String rol = usuarios.contar() == 0 ? "admin" : "usuario";
-        String nombreLimpio = ValidadorNombre.formatear(nombre);
-        int id = usuarios.crear(email, BCrypt.hashpw(password, BCrypt.gensalt(10)), nombreLimpio, rol,
-                OffsetDateTime.now().plusDays(Plan.DIAS_PRUEBA), VERSION_TERMINOS, VERSION_PRIVACIDAD);
-        return usuarios.porId(id).orElseThrow();
+    /** Cierra la sesión en el servidor (en modo JDBC no hay nada que cerrar). */
+    public void cerrarSesion() {
     }
 
     public Optional<Usuario> autenticar(String emailCrudo, String password) {

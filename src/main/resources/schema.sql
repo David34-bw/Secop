@@ -182,3 +182,11 @@ CREATE TABLE IF NOT EXISTS postulaciones (
   actualizado_at      TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT postulaciones_unica UNIQUE (user_id, proceso_id)
 );
+
+-- Procesos que el usuario ocultó de Oportunidades (clic derecho > Ocultar).
+CREATE TABLE IF NOT EXISTS procesos_ocultos (
+  usuario_id INTEGER      NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  proceso_id VARCHAR(100) NOT NULL REFERENCES procesos(id_del_proceso) ON DELETE CASCADE,
+  fecha      TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT procesos_ocultos_pk PRIMARY KEY (usuario_id, proceso_id)
+);

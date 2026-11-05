@@ -1,5 +1,6 @@
 package co.secopradar.modelo.dao;
 
+import co.secopradar.modelo.repositorio.PerfilRepositorio;
 import co.secopradar.modelo.Perfil;
 
 import java.util.List;
@@ -7,7 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /** Acceso a la tabla perfiles. Las listas se guardan como texto JSON. */
-public class PerfilDAO {
+public class PerfilDAO implements PerfilRepositorio {
 
     private static final BaseDatos.Mapeador<Perfil> MAPEADOR = rs -> new Perfil(
             rs.getInt("id"), rs.getInt("user_id"), rs.getString("nombre"),
@@ -26,31 +27,38 @@ public class PerfilDAO {
             rs.getBoolean("desactivado_por_plan"),
             Filas.fecha(rs, "created_at"));
 
+    @Override
     public List<Perfil> deUsuario(int userId) {
         return BaseDatos.consultar("SELECT * FROM perfiles WHERE user_id = ? ORDER BY created_at DESC, id DESC", MAPEADOR, userId);
     }
 
     /** En orden de creación: los primeros que creó la persona son los que se conservan. */
+    @Override
     public List<Perfil> deUsuarioPorAntiguedad(int userId) {
         return BaseDatos.consultar("SELECT * FROM perfiles WHERE user_id = ? ORDER BY created_at, id", MAPEADOR, userId);
     }
 
+    @Override
     public List<Perfil> activos() {
         return BaseDatos.consultar("SELECT * FROM perfiles WHERE activo ORDER BY id", MAPEADOR);
     }
 
+    @Override
     public Optional<Perfil> porId(int id) {
         return BaseDatos.uno("SELECT * FROM perfiles WHERE id = ?", MAPEADOR, id);
     }
 
+    @Override
     public int contarActivos(int userId) {
         return (int) BaseDatos.numero("SELECT count(*) FROM perfiles WHERE user_id = ? AND activo", userId);
     }
 
+    @Override
     public int contar() {
         return (int) BaseDatos.numero("SELECT count(*) FROM perfiles");
     }
 
+    @Override
     public int crear(Perfil p) {
         return BaseDatos.insertar("INSERT INTO perfiles (user_id, nombre, categorias, palabras_clave, palabras_excluir, "
                         + "departamentos, ciudades, modalidades, tipos_contrato, tipos_entidad, rangos_valor, "
@@ -62,15 +70,18 @@ public class PerfilDAO {
     }
 
     /** El user_id en el WHERE evita borrar perfiles ajenos. */
+    @Override
     public int eliminar(int id, int userId) {
         return BaseDatos.actualizar("DELETE FROM perfiles WHERE id = ? AND user_id = ?", id, userId);
     }
 
+    @Override
     public void cambiarEstado(int id, boolean activo, boolean desactivadoPorPlan) {
         BaseDatos.actualizar("UPDATE perfiles SET activo = ?, desactivado_por_plan = ? WHERE id = ?", activo, desactivadoPorPlan, id);
     }
 
     /** Ranking de profesiones elegidas (Administración). */
+    @Override
     public List<Map<String, Object>> rankingProfesiones() {
         return BaseDatos.filas("SELECT profesion_id, count(*) AS n FROM perfiles "
                 + "WHERE profesion_id IS NOT NULL GROUP BY profesion_id ORDER BY n DESC");
