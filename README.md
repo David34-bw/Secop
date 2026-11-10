@@ -37,6 +37,10 @@ de Supabase y **no necesita la contraseña de la base**, solo la clave *publisha
 - La actualización diaria de SECOP la hace el servidor a las 21:00 de Colombia (`pg_cron`), no cada computador.
 - Los documentos subidos se guardan en Supabase Storage (bucket privado `documentos`).
 - La sesión dura 7 días; después hay que volver a ingresar.
+- **Rápida al cambiar de pestaña:** las respuestas del servidor quedan en memoria (`MemoriaApi`) y, al
+  ingresar, la app pide en segundo plano lo que usan las pantallas. Guardar, borrar u ocultar algo vacía la
+  memoria del usuario; cerrar sesión la vacía toda; lo que cambia el job diario dura 5 minutos. El botón
+  **⟳ Actualizar datos** (abajo a la derecha) la vacía a mano.
 - Si la API no responde, la app usa la base local y lo avisa.
 
 El servidor **ya está configurado**. Si alguna vez hay que repetirlo (por ejemplo, tras cambiar el código de
@@ -68,7 +72,7 @@ Desde la terminal también funciona:
 mvnw.cmd javafx:run
 ```
 
-Tests (77: reglas portadas de la web original, ocultar procesos con H2 y el modo API contra un servidor falso):
+Tests (94: reglas portadas de la web original, ocultar procesos y foto con H2, el modo API y su memoria contra un servidor falso):
 
 ```bash
 mvnw.cmd test
@@ -140,7 +144,7 @@ docs/api-https/                    ← diseño y guía de despliegue del modo AP
 | Mis postulaciones | Botón «Postularme» en cada proceso abierto. Cada postulación avanza por las 7 etapas de la guía **en orden** (registro en SECOP II, revisar el proceso, leer el pliego, reunir documentos, propuesta económica, presentar la oferta, evaluación): una etapa se desbloquea al completar la anterior. La de documentos se completa sola con lo de Mis documentos más los requisitos propios del pliego; la oferta no puede pasar del presupuesto; no se marca presentada si ya cerró; resultado ganada, no ganada o subsanar (con plazo). Tabla `postulaciones` |
 | Mis documentos | Lo que pide SECOP II para presentarse (guía para persona natural): datos del proponente (documento, teléfono, profesión, matrícula COPNIA, RUP, SIGEP...) y subida de archivos (cédula, inhabilidades, seguridad social, antecedentes, RUT, certificación bancaria, RUP, SIGEP, título, tarjeta profesional, experiencia, certificaciones). PDF/JPG/PNG de hasta 5 MB (en modo API van a Supabase Storage; en modo JDBC, a la tabla `documentos`), con fecha de vencimiento y aviso 15 días antes. Muestra para qué modalidades estás listo y qué te falta; las tarjetas de Oportunidades y Buscar también lo dicen |
 | Buscar | Búsqueda libre (`"frase"`, `OR`, `-excluir`) o por profesión |
-| Planes / Mi cuenta | Plan y límites, avisos, nombre y contraseña |
+| Planes / Mi cuenta | Plan y límites, avisos, nombre, contraseña y **foto de perfil** (JPG/PNG hasta 10 MB; se recorta en cuadrado y se guarda a 256×256 en la tabla `fotos_perfil`; también se ve en el menú, sin foto muestra las iniciales) |
 | Administración | Estadísticas, descargar de SECOP ahora, historial, cambiar plan y rol de usuarios |
 
 ## Diferencias con la web original

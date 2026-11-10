@@ -253,4 +253,30 @@ public final class OtrosApi {
             api.llamar("postulaciones.eliminar", cuerpo("id", id));
         }
     }
+
+    /** Foto de perfil por la API: viaja en base64 (pesa unos 20 KB; ClienteApi la guarda en memoria). */
+    public static class FotoApi implements co.secopradar.modelo.repositorio.FotoRepositorio {
+        private final ClienteApi api;
+
+        public FotoApi(ClienteApi api) {
+            this.api = api;
+        }
+
+        @Override
+        public Optional<byte[]> de(int usuarioId) {
+            JsonNode b = api.llamar("cuenta.foto", null).path("base64");
+            if (!b.isTextual() || b.asText().isEmpty()) return Optional.empty();
+            return Optional.of(java.util.Base64.getDecoder().decode(b.asText()));
+        }
+
+        @Override
+        public void guardar(int usuarioId, byte[] contenido, String tipo) {
+            api.llamar("cuenta.cambiarFoto", cuerpo("base64", java.util.Base64.getEncoder().encodeToString(contenido)));
+        }
+
+        @Override
+        public void quitar(int usuarioId) {
+            api.llamar("cuenta.quitarFoto", null);
+        }
+    }
 }

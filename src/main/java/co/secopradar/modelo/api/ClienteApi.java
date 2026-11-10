@@ -56,6 +56,7 @@ public class ClienteApi {
     private final String clave;
     private final HttpClient http;
     private volatile String token;
+    private final MemoriaApi memoria = new MemoriaApi();
 
     public ClienteApi(String urlBase, String clave) {
         this(urlBase, clave, HttpClient.newBuilder()
@@ -76,12 +77,15 @@ public class ClienteApi {
 
     // ---- Sesión ----
 
+    /** Otra sesión (u otro usuario): nada de lo guardado de la anterior sirve. */
     public void usarToken(String token) {
+        memoria.borrarTodo();
         this.token = token;
     }
 
     public void olvidarToken() {
         this.token = null;
+        memoria.borrarTodo();
     }
 
     public boolean conSesion() {
@@ -97,7 +101,11 @@ public class ClienteApi {
         return JSON.valueToTree(m);
     }
 
-    /** Llama una operación y devuelve la respuesta como árbol JSON. Lanza ErrorApi si falla. */
+    /**
+     * Llama una operación y devuelve la respuesta como árbol JSON. Lanza ErrorApi si falla.
+     * Las lecturas se sirven de la memoria si están vigentes (ver MemoriaApi); cualquier
+     * otra operación borra lo guardado del usuario para que nunca se muestre algo viejo.
+     */
     public JsonNode llamar(String operacion, Object cuerpo) {
         String body;
         try {
@@ -105,6 +113,21 @@ public class ClienteApi {
         } catch (IOException e) {
             throw new ErrorApi(0, "cliente", "No se pudo preparar la petición: " + e.getMessage(), null);
         }
+        if (MemoriaApi.esLectura(operacion)) return memoria.leer(operacion, body, () -> enviar(operacion, body));
+        try {
+            return enviar(operacion, body);
+        } finally {
+            // También si falló: el servidor pudo haber guardado algo antes del error.
+            memoria.despuesDeEscribir(operacion);
+        }
+    }
+
+    /** Lo guardado en memoria (para la precarga y las pruebas). */
+    public MemoriaApi memoria() {
+        return memoria;
+    }
+
+    private JsonNode enviar(String operacion, String body) {
         HttpRequest.Builder req = HttpRequest.newBuilder(URI.create(urlBase + "/" + operacion))
                 .timeout(Duration.ofSeconds(60))
                 .header("Content-Type", "application/json")
@@ -133,7 +156,10 @@ public class ClienteApi {
         Map<String, String> campos = new LinkedHashMap<>();
         error.path("campos").fields().forEachRemaining(e -> campos.put(e.getKey(), e.getValue().asText()));
         String mensaje = error.path("mensaje").asText("El servidor respondió " + res.statusCode() + ".");
-        if (res.statusCode() == 401) token = null;
+        if (res.statusCode() == 401) {
+            token = null;
+            memoria.borrarTodo();
+        }
         throw new ErrorApi(res.statusCode(), error.path("codigo").asText("desconocido"), mensaje, campos);
     }
 

@@ -7,6 +7,8 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.FlowPane?>
@@ -20,6 +22,21 @@
         <Label styleClass="titulo-pagina" text="Mi cuenta"/>
         <Label fx:id="mensaje" styleClass="aviso-exito" wrapText="true" maxWidth="Infinity"/>
         <Label fx:id="error" styleClass="aviso-error" wrapText="true" maxWidth="Infinity"/>
+
+        <HBox styleClass="caja" spacing="18" alignment="CENTER_LEFT">
+            <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+            <StackPane fx:id="avatar"/>
+            <VBox spacing="6">
+                <Label styleClass="subtitulo" text="Foto de perfil"/>
+                <Label styleClass="texto-chico" wrapText="true"
+                       text="JPG o PNG de hasta 10 MB. Se recorta en cuadrado al centro y se guarda pequeña."/>
+                <HBox spacing="8" alignment="CENTER_LEFT">
+                    <Button fx:id="botonFoto" text="Subir foto" styleClass="boton-borde" onAction="#elegirFoto"/>
+                    <Button fx:id="botonQuitarFoto" text="Quitar foto" styleClass="boton-enlace" onAction="#quitarFoto"/>
+                    <ProgressIndicator fx:id="cargandoFoto" prefWidth="22" prefHeight="22"/>
+                </HBox>
+            </VBox>
+        </HBox>
 
         <VBox styleClass="caja" spacing="6">
             <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>

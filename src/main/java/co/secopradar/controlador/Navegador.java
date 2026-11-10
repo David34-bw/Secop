@@ -82,6 +82,11 @@ public final class Navegador {
         return principal.mostrar(pantalla);
     }
 
+    /** Después de cambiar la foto o el nombre en Mi cuenta: actualiza el avatar del menú. */
+    public static void perfilCambiado() {
+        if (principal != null) principal.pintarFoto();
+    }
+
     /** Abre un enlace (por ejemplo el proceso en SECOP) en el navegador del sistema. */
     public static void abrirEnlace(String url) {
         if (url != null && !url.isBlank()) host.showDocument(url);

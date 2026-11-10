@@ -102,6 +102,10 @@
 }
 .boton-menu-salir:hover { -fx-background-color: rgba(255, 255, 255, 0.1); }
 .menu-email { -fx-text-fill: rgba(255, 255, 255, 0.65); -fx-font-size: 11.5px; -fx-padding: 0 4 6 4; }
+/* Avatar de la foto de perfil (Mi cuenta y menú). */
+.avatar { -fx-cursor: hand; }
+.avatar-sin-foto { -fx-background-color: -azul; -fx-background-radius: 999; -fx-border-color: rgba(255, 255, 255, 0.85); -fx-border-radius: 999; -fx-border-width: 1.5; }
+.avatar-iniciales { -fx-text-fill: white; -fx-font-weight: bold; }
 .barra-estado { -fx-background-color: -superficie; -fx-border-color: -borde transparent transparent transparent; }
 .punto-estado {
     -fx-min-width: 9; -fx-min-height: 9; -fx-max-width: 9; -fx-max-height: 9;

@@ -33,7 +33,10 @@
             <Button fx:id="botonCuenta" text="Mi cuenta" styleClass="boton-menu" maxWidth="Infinity" onAction="#irACuenta"/>
             <Button fx:id="botonAdmin" text="Administración" styleClass="boton-menu" maxWidth="Infinity" onAction="#irAAdmin"/>
             <Region VBox.vgrow="ALWAYS"/>
-            <Label fx:id="email" styleClass="menu-email" wrapText="true"/>
+            <HBox spacing="8" alignment="CENTER_LEFT">
+                <StackPane fx:id="avatar" onMouseClicked="#irACuentaDesdeAvatar"/>
+                <Label fx:id="email" styleClass="menu-email" wrapText="true" HBox.hgrow="ALWAYS"/>
+            </HBox>
             <Button text="Cerrar sesión" styleClass="boton-menu-salir" maxWidth="Infinity" onAction="#salir"/>
         </VBox>
     </left>
@@ -45,6 +48,8 @@
             <padding><Insets top="6" right="14" bottom="6" left="14"/></padding>
             <Label fx:id="indicador" styleClass="punto-estado"/>
             <Label fx:id="estado" styleClass="texto-chico"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="botonRefrescar" text="⟳ Actualizar datos" styleClass="boton-enlace" onAction="#refrescarDatos"/>
         </HBox>
     </bottom>
 </BorderPane>

@@ -10,6 +10,7 @@
 import { type Cuerpo, error, ErrorApi, json, malaPeticion, noEncontrado, prohibido } from "./lib/http.ts";
 import { exigirAdmin, type Usuario, usuarioDeSesion } from "./lib/sesion.ts";
 import * as cuenta from "./ops/cuenta.ts";
+import * as foto from "./ops/foto.ts";
 import * as procesos from "./ops/procesos.ts";
 import * as perfiles from "./ops/perfiles.ts";
 import * as documentos from "./ops/documentos.ts";
@@ -34,6 +35,9 @@ const DE_USUARIO: Record<string, ConSesion> = {
   "cuenta.cambiarNombre": (u, c) => cuenta.cambiarNombre(u, c),
   "cuenta.cambiarPassword": (u, c) => cuenta.cambiarPassword(u, c),
   "cuenta.avisos": (u, c) => cuenta.avisos(u, c),
+  "cuenta.foto": (u) => foto.foto(u),
+  "cuenta.cambiarFoto": (u, c) => foto.cambiarFoto(u, c),
+  "cuenta.quitarFoto": (u) => foto.quitarFoto(u),
   "inicio.datos": () => procesos.inicioDatos(),
   "procesos.vigentes": (_u, c) => procesos.vigentes(c),
   "procesos.porIds": (_u, c) => procesos.porIds(c),

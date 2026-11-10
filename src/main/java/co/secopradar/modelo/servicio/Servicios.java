@@ -66,6 +66,7 @@ public final class Servicios {
     public final ProponenteRepositorio proponentes;
     public final DocumentoRepositorio archivos;
     public final PostulacionRepositorio postulacionesDao;
+    public final co.secopradar.modelo.repositorio.FotoRepositorio fotosRepo;
 
     public final CuentaService cuentas;
     public final PlanesService planes;
@@ -78,6 +79,7 @@ public final class Servicios {
     public final LegalService legal;
     public final DocumentosService documentos;
     public final PostulacionesService postulaciones;
+    public final FotoPerfilService fotos;
     public final LimiteIntentos limiteIntentos = new LimiteIntentos();
     public final CronService actualizacion;
 
@@ -102,6 +104,7 @@ public final class Servicios {
             proponentes = new OtrosApi.ProponenteApi(api);
             archivos = new OtrosApi.DocumentoApi(api);
             postulacionesDao = new OtrosApi.PostulacionApi(api);
+            fotosRepo = new OtrosApi.FotoApi(api);
         } else {
             usuarios = new UsuarioDAO();
             perfiles = new PerfilDAO();
@@ -112,6 +115,7 @@ public final class Servicios {
             proponentes = new ProponenteDAO();
             archivos = new DocumentoDAO();
             postulacionesDao = new PostulacionDAO();
+            fotosRepo = new co.secopradar.modelo.dao.FotoDAO();
         }
 
         ingesta = new IngestaService(procesos, logs, new ObjectMapper(), config.getProperty("socrata.app-token", ""));
@@ -119,6 +123,7 @@ public final class Servicios {
         busqueda = new BusquedaService(procesos);
         portada = new PortadaService(procesos);
         legal = new LegalService(config.getProperty("correo-contacto", "contacto@secop-radar.local"));
+        fotos = new FotoPerfilService(fotosRepo);
         if (api != null) {
             // Lo que en JDBC son varias escrituras, aquí es una sola operación del servidor.
             cuentas = new CuentaServiceApi(usuarios, api);
@@ -222,6 +227,56 @@ public final class Servicios {
         cuentas.cerrarSesion();
         BaseDatos.cerrar();
     }
+
+    /**
+     * Modo API: al entrar, pide en segundo plano (4 a la vez) lo que usan las
+     * pantallas, para que al cambiar de pestaña ya esté en memoria. Es lo mismo
+     * que pedirían las pantallas, una sola vez; si una pantalla lo pide mientras
+     * viaja, espera esa misma respuesta en vez de hacer otra llamada.
+     */
+    public void precargar() {
+        if (api == null || !api.conSesion() || Sesion.usuarioId() == null) return;
+        int id = Sesion.usuarioId();
+        java.util.List<Runnable> tareas = java.util.List.of(
+                () -> usuarios.porId(id),
+                () -> fotos.de(id),
+                () -> api.llamar("oportunidades.vigentes", ClienteApi.cuerpo("incluirOcultas", false)),
+                () -> coincidencias.vigentesDeUsuario(id),
+                () -> perfiles.deUsuario(id),
+                () -> postulacionesDao.idsPorProceso(id),
+                () -> proponentes.deUsuario(id),
+                () -> archivos.deUsuario(id),
+                () -> postulacionesDao.deUsuario(id),
+                () -> ocultos.deUsuario(id),
+                () -> procesos.resumenAbiertos(null, null),
+                () -> procesos.contar(),
+                // La más pesada al final: los procesos vigentes para Buscar (luego solo llegan los cambios).
+                () -> procesos.vigentes());
+        for (Runnable t : tareas) {
+            fondo.execute(() -> {
+                try {
+                    if (api.conSesion()) t.run();
+                } catch (RuntimeException e) {
+                    // La pantalla lo volverá a pedir y mostrará el error si sigue fallando.
+                    log.info("Precarga: {}", e.getMessage());
+                }
+            });
+        }
+    }
+
+    /** Botón Actualizar: olvida lo guardado en memoria y lo vuelve a pedir. */
+    public void refrescarDatos() {
+        if (api == null) return;
+        api.memoria().borrarTodo();
+        precargar();
+    }
+
+    /** Hilos de la precarga: pocos (no satura la red) y de fondo (no impiden cerrar la app). */
+    private final java.util.concurrent.ExecutorService fondo = java.util.concurrent.Executors.newFixedThreadPool(4, r -> {
+        Thread t = new Thread(r, "precarga");
+        t.setDaemon(true);
+        return t;
+    });
 
     /** Cerrar sesión desde la app: en modo API también la cierra en el servidor. */
     public void salir() {

@@ -183,6 +183,14 @@ CREATE TABLE IF NOT EXISTS postulaciones (
   CONSTRAINT postulaciones_unica UNIQUE (user_id, proceso_id)
 );
 
+-- Foto de perfil (Mi cuenta), ya recortada a 256x256 por la app.
+CREATE TABLE IF NOT EXISTS fotos_perfil (
+  usuario_id     INTEGER     NOT NULL PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+  contenido      BYTEA       NOT NULL,
+  tipo           VARCHAR(20) NOT NULL,
+  actualizado_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Procesos que el usuario ocultó de Oportunidades (clic derecho > Ocultar).
 CREATE TABLE IF NOT EXISTS procesos_ocultos (
   usuario_id INTEGER      NOT NULL REFERENCES users(id) ON DELETE CASCADE,

@@ -47,6 +47,7 @@ public class ServidorFalso implements AutoCloseable {
         }
     }
 
+    private final java.util.concurrent.ExecutorService hilos = java.util.concurrent.Executors.newCachedThreadPool();
     private final HttpServer servidor;
     private final Map<String, Function<Peticion, Respuesta>> rutas = new ConcurrentHashMap<>();
     public final List<Peticion> recibidas = new CopyOnWriteArrayList<>();
@@ -54,6 +55,8 @@ public class ServidorFalso implements AutoCloseable {
     public ServidorFalso() throws IOException {
         servidor = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
         servidor.createContext("/", this::atender);
+        // Varias peticiones a la vez, como el servidor real.
+        servidor.setExecutor(hilos);
         servidor.start();
     }
 
@@ -98,5 +101,6 @@ public class ServidorFalso implements AutoCloseable {
     @Override
     public void close() {
         servidor.stop(0);
+        hilos.shutdownNow();
     }
 }
