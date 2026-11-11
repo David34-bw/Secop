@@ -6,9 +6,13 @@ import co.secopradar.modelo.servicio.Servicios;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.layout.StackPane;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -35,6 +39,7 @@ public class PrincipalControlador {
 
     private final Servicios s = Servicios.get();
     private Map<Pantalla, Button> botones;
+    private final ContextMenu menuNavegacion = new ContextMenu();
     private Pantalla actual = Pantalla.OPORTUNIDADES;
 
     @FXML
@@ -47,6 +52,10 @@ public class PrincipalControlador {
                 Map.entry(Pantalla.POSTULACIONES, botonPostulaciones), Map.entry(Pantalla.POSTULACION, botonPostulaciones),
                 Map.entry(Pantalla.DOCUMENTOS, botonDocumentos), Map.entry(Pantalla.BUSCAR, botonBuscar),
                 Map.entry(Pantalla.PLANES, botonPlanes), Map.entry(Pantalla.CUENTA, botonCuenta), Map.entry(Pantalla.ADMIN, botonAdmin));
+        contenido.setOnContextMenuRequested(e -> {
+            armarMenuNavegacion();
+            menuNavegacion.show(contenido, e.getScreenX(), e.getScreenY());
+        });
 
         // Modo API: lo que usan las demás pestañas se pide ya, en segundo plano.
         s.precargar();
@@ -91,6 +100,35 @@ public class PrincipalControlador {
     @FXML
     private void irACuentaDesdeAvatar() {
         mostrar(Pantalla.CUENTA);
+    }
+
+    /**
+     * Menú del clic derecho en cualquier pantalla: las mismas opciones del
+     * menú lateral. Las tarjetas de oportunidad tienen su propio menú.
+     */
+    private void armarMenuNavegacion() {
+        List<Pantalla> pantallas = List.of(Pantalla.INICIO, Pantalla.OPORTUNIDADES, Pantalla.PERFILES,
+                Pantalla.POSTULACIONES, Pantalla.DOCUMENTOS, Pantalla.BUSCAR, Pantalla.PLANES, Pantalla.CUENTA);
+        menuNavegacion.getItems().clear();
+        for (Pantalla p : pantallas) menuNavegacion.getItems().add(opcionMenu(p));
+        if (usuario().esAdmin()) menuNavegacion.getItems().add(opcionMenu(Pantalla.ADMIN));
+        menuNavegacion.getItems().add(new SeparatorMenuItem());
+        if (s.api != null) {
+            // Igual que el botón de abajo: vuelve a pedir los datos al servidor.
+            MenuItem refrescar = new MenuItem("⟳ Actualizar datos");
+            refrescar.setOnAction(e -> refrescarDatos());
+            menuNavegacion.getItems().add(refrescar);
+        }
+        MenuItem cerrar = new MenuItem("Cerrar sesión");
+        cerrar.setOnAction(e -> salir());
+        menuNavegacion.getItems().add(cerrar);
+    }
+
+    private MenuItem opcionMenu(Pantalla p) {
+        MenuItem item = new MenuItem(p.titulo);
+        item.setOnAction(e -> mostrar(p));
+        item.setDisable(botones.get(p) == botones.get(actual));
+        return item;
     }
 
     private Usuario usuario() {

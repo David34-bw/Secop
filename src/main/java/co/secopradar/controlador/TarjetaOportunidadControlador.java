@@ -107,7 +107,11 @@ public class TarjetaOportunidadControlador {
             });
             menu.getItems().addAll(new SeparatorMenuItem(), ocultar);
         }
-        tarjeta.setOnContextMenuRequested(e -> menu.show(tarjeta, e.getScreenX(), e.getScreenY()));
+        // consume(): que no salga también el menú de navegación de la ventana principal.
+        tarjeta.setOnContextMenuRequested(e -> {
+            menu.show(tarjeta, e.getScreenX(), e.getScreenY());
+            e.consume();
+        });
         if (oculta) {
             tarjeta.getStyleClass().add("tarjeta-oculta");
             perfil.setText("Oculta" + (perfil.getText().isEmpty() ? "" : " · " + perfil.getText()));
